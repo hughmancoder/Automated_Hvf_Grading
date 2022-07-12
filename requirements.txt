@@ -1,0 +1,12 @@
+tesserOCR
+regex
+pydicom
+pillow
+opencv-python
+fuzzywuzzy
+fuzzysearch
+pandas
+python-levenshtein
+pdf2image
+numpy
+joblib

@@ -1,0 +1,14 @@
+Metadata-Version: 1.2
+Name: hvf-extraction-script
+Version: 0.0.4
+Summary: Python extraction script for HVF report images
+Home-page: https://github.com/msaifee786/hvf_extraction_script
+Author: Murtaza Saifee
+Author-email: saifeeapps@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
