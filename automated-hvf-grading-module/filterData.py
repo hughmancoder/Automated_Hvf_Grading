@@ -3,15 +3,16 @@ import pathlib
 import os
 import site
 
-
 class filterData:
-    def mirror(self, matrix):
+    @staticmethod
+    def mirror(matrix):
         r = 0
         for subarray in matrix:
             matrix[r] = list(subarray[::-1])
             r += 1
         return matrix
 
+    @staticmethod
     def PrintMatrix(mat):  # prints of matrix in easy to read format
         rows = len(mat[0])
         cols = len(mat)
@@ -29,7 +30,8 @@ class filterData:
                 else:
                     print(str(mat[r][c]) + "   ", end="")
 
-    def ProcessMatrix(self, matrix, eye):
+    @staticmethod
+    def ProcessMatrix(matrix, eye):
 
         level_map = {  # converts levels to VFI percentages for grading
             "1.0": 0,
@@ -51,12 +53,13 @@ class filterData:
                         matrix[r][c] = level_map[str(matrix[r][c])]
 
             if eye == "Left":
-                matrix = self.mirror(matrix)
+                matrix = filterData.mirror(matrix)
             return matrix
         except:
             print("Error: empty matrix unable to be processed")
             return []
 
+    @staticmethod
     def ExtractSingleFieldFilePath():
         importlib.reload(site)  # refreshes file path
         filepath = pathlib.Path().resolve()
@@ -66,15 +69,26 @@ class filterData:
             return singlefieldpath
         return filepath
 
-    def FilePathToArray(filepath, size):
+    @staticmethod
+    def FilePathSampleToArray(filepath, sample_size):
         try:
             Files = os.listdir(filepath)  # gets all files in that directory
-            Sample = [str(filepath) + "/" + str(x) for x in Files[: int(size)]]
+            Sample = [str(filepath) + "/" + str(x) for x in Files[: int(sample_size)]]
         except:
             print("Error: Invalid inputs")
             Sample = []
         return Sample
 
+    def FilePathToArray(filepath):
+        try:
+            Files = os.listdir(filepath)  # gets all files in that directory
+            Sample = [str(filepath) + "/" + str(fileName) for fileName in Files]
+        except:
+            print("Error: Invalid inputs")
+            Sample = []
+        return Sample
+
+    @staticmethod
     def formatList(
         region_list, crit, result, patient_dictionary
     ):  # adds algorithm result to list
@@ -83,23 +97,27 @@ class filterData:
         l.append(result)
         return l
 
+    @staticmethod
     def filterPDF(List):  # removes pngs from list for later processing
         for i in List:
             if ".png" in i:
                 List.remove(i)
         return List
 
+    @staticmethod
     def addToDataFrame(List, data):  # adds list value to df
         data.append(List)
         return data
 
+    @staticmethod
     def sortByID(df, ID):  # get subset via ID
         sdf = df[df["ID"] == ID]
         sdf = sdf.sort_values(by="Date")
         return sdf
 
+    @staticmethod
     def addMedicalTerm(
-        self, region, eye
+        region, eye
     ):  # function converts regions to technical medical Terms
         leftConversion = {
             "UL": "Superior temporal wedge",

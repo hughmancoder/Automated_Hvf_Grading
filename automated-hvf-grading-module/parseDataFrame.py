@@ -2,7 +2,6 @@ from joblib import Parallel, delayed
 import argparse
 import pandas as pd
 
-# Program arguments creation. All functions should be above this point
 parser = argparse.ArgumentParser(description='HVF Progression')
 parser.add_argument("--group", "-g", type=int, help="Group Method; 0 = By Patient ID, 1 = Seperate Folders", default=0, choices=[0, 1])
 parser.add_argument("--progression", "-p", help='Progression analysis method to use; 0 = Default', type=int, choices=[0])

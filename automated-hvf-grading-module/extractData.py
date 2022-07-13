@@ -11,6 +11,8 @@ import os
 import pathlib  # pathy
 import numpy as np
 
+# == Note ==
+# current class methods are static (for now) as we pass all funtion requisites as parameters
 
 class extractHVFData:
     def __init__(self):
@@ -67,13 +69,14 @@ class extractHVFData:
         img = Image.fromarray(img_arr)
         img.save(image_path)
     """
-
+    @staticmethod
     def filterPDF(List):  # removes ensures that only pdf's are read
         for i in List:
             if ".png" in i:
                 List.remove(i)
         return List
 
+    @staticmethod
     def ExtractPDF(pdf_path, name):
         try:
             if os.path.exists(pdf_path):  # checking if path is valid
@@ -192,10 +195,11 @@ class extractHVFData:
         return patient_dictionary
 
     # this function runs all the functions above
-    def readFile(self, image_path, patient_dictionary):
+    @staticmethod
+    def readFile( image_path, patient_dictionary):
         global error
         try:
-            return self.extractMatrix(image_path, patient_dictionary)
+            return extractHVFData.extractMatrix(image_path, patient_dictionary)
         except:
             error = True  # mark error so we pass over data frame
             print(
