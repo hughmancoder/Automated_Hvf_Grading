@@ -34,7 +34,7 @@ https://github.com/msaifee786/hvf_extraction_script
 - [ ] False negatives (list reliability index on GUI)
 - [ ] highlight/ 'select' a row of the table (ie an individual field) to make it easy to track when scrolling across
 - [ ] column headings should be locked so when scrolling down the rows these still stay at the top
-- [ ] implement a more intuative drop down filter for right and left eye
+- [ ] implement a more intuitive drop down filter for right and left eye
 
 ### developer notes
 
