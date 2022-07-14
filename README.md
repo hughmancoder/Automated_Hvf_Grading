@@ -18,6 +18,7 @@ https://github.com/msaifee786/hvf_extraction_script
 - [x] refactor code using OOP
 - [x] refactor into a module
 - [ ] get driver.py to run
+- [ ] fix criteria in algorithm (< 5 % not 0.5 %) 
 
 ### intial bug fixes based on user requirements
 - [ ] MD% and PSD% in the criteria for abnormal (criteria 3) [Fix psd < 5%]
