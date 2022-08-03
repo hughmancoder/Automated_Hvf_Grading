@@ -1,2 +1,11 @@
 singleField/
 **/singleField/
+
+automated_hvf_grading.egg-info/*
+build/*
+dist/*
+
+hvf_extraction_script/hvf_extraction_script.egg-info/*
+hvf_extraction_script/build/*
+hvf_extraction_script/dist/*
+.vscode/*

@@ -31,17 +31,18 @@ https://github.com/msaifee786/hvf_extraction_script
 - [ ] Progression analysis inconsistent (errors sometimes occur)
 
 ### GUI
-- [ ] False negatives (list reliability index on GUI)
-- [ ] highlight/ 'select' a row of the table (ie an individual field) to make it easy to track when scrolling across
-- [ ] column headings should be locked so when scrolling down the rows these still stay at the top
-- [ ] implement a more intuitive drop down filter for right and left eye
+- [x] False negatives (list reliability index on GUI)
+- [x] highlight/ 'select' a row of the table (ie an individual field) to make it easy to track when scrolling across
+- [x] column headings should be locked so when scrolling down the rows these still stay at the top
+- [x] implement a more intuitive drop down filter for right and left eye
 
 ### developer notes
-
+```
 conda create --name automated-hvf-grading
 conda activate automated-hvf-grading
 conda install pip
 conda install -c conda-forge tesseract
-pip install hvf-extraction-script 
+pip install hvf-extraction-script
+```
 
 **select python interpreter: automated-hvf-grading**

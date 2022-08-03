@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>HVF Grading and Analysis</title>
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="quartz.css" />
+  <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.css" />
+  <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="../node_modules/bootstrap-table/dist/bootstrap-table.css" />
+  <link rel="stylesheet"
+    href="../node_modules/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.css" />
+  <link rel="stylesheet"
+    href="../node_modules/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.css" />
+
+</head>
+
+<body>
+  <div class="container-fluid p-2 m-0 px-3 vh-100 d-flex flex-column overflow-hidden">
+    <div class="position-fixed bottom-0 start-0 p-3" style="z-index: 11">
+      <div id="Toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2500">
+        <div class="toast-header">
+          <strong class="me-auto">Error</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          <p>Undefined Error Occured</p>
+          <div class="mt-2 pt-2 border-top">
+            <button type="button" class="btn btn-primary btn-sm" onclick="OpenDevTools()">Open Console Log</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row d-flex flex-row">
+      <div class="col-auto align-content-center">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li id="tab-1" class="nav-item" role="presentation" data-bs-toggle="tooltip" data-bs-placement="bottom"
+            title="Automated Grading">
+            <button class="nav-link active" id="grading-tab" href="#grading" data-bs-toggle="tab"
+              data-bs-target="#grading" type="button" role="tab" aria-controls="grading" aria-selected="true">
+              Grading
+            </button>
+          </li>
+          <li id="tab-2" class="nav-item" role="presentation" data-bs-toggle="tooltip" data-bs-placement="bottom"
+            title="Progression Criteria Analysis">
+            <button class="nav-link" id="analysis-tab" href="#analysis" data-bs-toggle="tab" data-bs-target="#analysis"
+              type="button" role="tab" aria-controls="analysis" aria-selected="false">
+              Analysis
+            </button>
+          </li>
+          <li id="tab-3" class="nav-item" role="presentation" data-bs-toggle="tooltip" data-bs-placement="bottom"
+            title="Graphs (Under Development)">
+            <button class="nav-link" id="graph-tab" href="#graphs" data-bs-toggle="tab" data-bs-target="#graphs"
+              type="button" role="tab" aria-controls="graphs" aria-selected="false">
+              Graphs
+            </button>
+          </li>
+          <li id="tab-4" class="nav-item" role="presentation" data-bs-toggle="tooltip" data-bs-placement="bottom"
+            title="Settings (Under Development)">
+            <button class="nav-link" id="settings-tab" href="#settings" data-bs-toggle="tab" data-bs-target="#settings"
+              type="button" role="tab" aria-controls="settings" aria-selected="false">
+              <i class="fas fa-cog"></i>
+            </button>
+          </li>
+
+        </ul>
+      </div>
+      <div class="col flex-grow-1 text-center justify-content-center">
+        <h2 class="text-center ">HVF Grading And Analysis</h2>
+      </div>
+
+
+
+    </div>
+    <div class="row tab-content flex-grow-1" id="myTabContent">
+      <div class="tab-pane h-100 fade show active" id="grading" role="tabpanel">
+        <div class="h-100 d-flex flex-column">
+          <div class="row ">
+            <div class="card">
+              <div class="row p-1">
+                <div class="col p-2 align-self-center list-group" id="gradingupload-box">
+                  <div class="row align-items-center">
+                    <div class="col text-center align-items-center">
+                      <i class="fas fa-file-upload fa-3x text-primary"></i>
+                      <p class="m-0 text-primary">Drop Files or Folder(s)</p>
+                    </div>
+                    <div class="col align-self-center text-center text-black-50">
+                      <h3>OR</h3>
+                    </div>
+                    <div class="col align-self-center text-center">
+                      <input type="file" id="gradinguploadbuttonid" style="display: none"
+                        accept="application/pdf, image/bmp, image/jpg, image/jpeg, image/png" multiple />
+                      <label for="gradinguploadbuttonid" class="btn btn-primary"><i class="fas fa-file"></i> Choose
+                        Files</label>
+                      <div style="margin: 5px"></div>
+                      <input type="file" id="gradinguploadfolderbuttonid" style="display: none" webkitdirectory
+                        directory multiple />
+                      <label for="gradinguploadfolderbuttonid" class="btn btn-primary">
+                        <i class="fas fa-folder"></i> Choose Folder(s)</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-auto mx-2 align-self-center">
+                  <div class="row justify-content-center">
+
+                    <div class="col-md-auto text-center">
+                      <h5 class="m-1" id="gradingpdflistid">Files or Folder(s) accepted</h5>
+                      <button class="btn btn-danger" type="button" onclick="gradingclearButton()" data-bs-toggle="tooltip" title="Clears Output and Uploaded files">
+                        <i class="fas fa-trash"></i> Clear
+                      </button>
+                      <button class="btn btn-success" type="button" onclick="gradingsubmitButton()">
+                        <i class="fas fa-code"></i> Grade
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-auto border-start border-white m-2"></div>
+
+                <div class="col-auto p-2 align-self-center text-center">
+                  <button class="btn btn-success" type="button" onclick="gradingExportToProgression()"
+                    data-bs-toggle="tooltip" data-bs-placement="top" title="Moves data from Grading to Analysis Page"><i
+                      class="fas fa-file-import"></i> Move to Progression
+                    Analysis</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="row flex-grow-1" style="height: 0px !important;">
+            <div id="gradingtable-div" class="col h-100 mt-2 me-2">
+              <!-- Table here -->
+
+              <!-- <table data-toggle="table" data-single-select="true" data-click-to-select="true" data-search="true" data-show-columns="true" data-show-columns-search="true" data-search-highlight="true" data-show-columns-toggle-all="true"
+              data-buttons-align="left" data-show-export="true" data-filter-control="true" data-silent-sort="false" data-alignment-select-control-options="left" data-disable-control-when-search="true"
+              data-show-search-clear-button="true" class="dataframe" id="grading-table">
+                <thead>
+                  <tr style="text-align: left;">
+                    <th data-field="state" data-radio="true"></th>
+                    <th>FileName</th>
+                    <th data-field="Name" data-filter-control="select" data-sortable="true" >Name</th>
+                    <th>DOB</th>
+                    <th data-field="ID" data-filter-control="select" data-sortable="true" >ID</th>
+                    <th>Eye</th>
+                    <th>Size</th>
+                    <th>Date</th>
+                    <th>GHT</th>
+                    <th>MD</th>
+                    <th>PSD</th>
+                    <th>PSDP</th>
+                    <th>FalsePOS</th>
+                    <th>FixationLoss</th>
+                    <th>Reliable</th>
+                    <th>UL</th>
+                    <th>LL</th>
+                    <th>UM</th>
+                    <th>UC</th>
+                    <th>LC</th>
+                    <th>LM</th>
+                    <th>UR</th>
+                    <th>LR</th>
+                    <th>Criteria</th>
+                    <th>Defect</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      AC_20130809_1448_OS_SFA_CENTRAL_24_2_THRESHOLD_TEST_OS_1.2.276.0.75.2.5.80.25.3.200331032022040.22002785422940.26325080.pdf
+                    </td>
+                    <td>OXOOOO</td>
+                    <td>D</td>
+                    <td>810067.1</td>
+                    <td>Left</td>
+                    <td>24-2</td>
+                    <td>2013-08-09</td>
+                    <td>OutsideNormalLimits</td>
+                    <td>-2.98</td>
+                    <td>2.57</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>13.33</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>True</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>3</td>
+                    <td>True</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      B1_1228_OD_SFA_CENTRAL_24_2_THRESHOLD_TEST_OD_1.2.276.0.75.2.5.80.25.3.200331061420481.22002785422940.26355757.pdf
+                    </td>
+                    <td>Extraction Failure</td>
+                    <td>Extraction Failure</td>
+                    <td>0791996.8</td>
+                    <td>Right</td>
+                    <td>24-2</td>
+                    <td>2012-11-30</td>
+                    <td>WithinNormalLimits</td>
+                    <td>0.20</td>
+                    <td>1.40</td>
+                    <td>Extraction Failure</td>
+                    <td>0</td>
+                    <td>0.00</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>2</td>
+                    <td>False</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      AC_20130809_1448_OS_SFA_CENTRAL_24_2_THRESHOLD_TEST_OS_1.2.276.0.75.2.5.80.25.3.200331032022040.22002785422940.26325080.pdf
+                    </td>
+                    <td>OXOOOO</td>
+                    <td>D</td>
+                    <td>810067.1</td>
+                    <td>Left</td>
+                    <td>24-2</td>
+                    <td>2013-08-09</td>
+                    <td>OutsideNormalLimits</td>
+                    <td>-2.98</td>
+                    <td>2.57</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>13.33</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>True</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>3</td>
+                    <td>True</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      B1_1228_OD_SFA_CENTRAL_24_2_THRESHOLD_TEST_OD_1.2.276.0.75.2.5.80.25.3.200331061420481.22002785422940.26355757.pdf
+                    </td>
+                    <td>Extraction Failure</td>
+                    <td>Extraction Failure</td>
+                    <td>0791996.8</td>
+                    <td>Right</td>
+                    <td>24-2</td>
+                    <td>2012-11-30</td>
+                    <td>WithinNormalLimits</td>
+                    <td>0.20</td>
+                    <td>1.40</td>
+                    <td>Extraction Failure</td>
+                    <td>0</td>
+                    <td>0.00</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>2</td>
+                    <td>False</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      AC_20130809_1448_OS_SFA_CENTRAL_24_2_THRESHOLD_TEST_OS_1.2.276.0.75.2.5.80.25.3.200331032022040.22002785422940.26325080.pdf
+                    </td>
+                    <td>OXOOOO</td>
+                    <td>D</td>
+                    <td>810067.1</td>
+                    <td>Left</td>
+                    <td>24-2</td>
+                    <td>2013-08-09</td>
+                    <td>OutsideNormalLimits</td>
+                    <td>-2.98</td>
+                    <td>2.57</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>13.33</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>True</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>3</td>
+                    <td>True</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      B1_1228_OD_SFA_CENTRAL_24_2_THRESHOLD_TEST_OD_1.2.276.0.75.2.5.80.25.3.200331061420481.22002785422940.26355757.pdf
+                    </td>
+                    <td>Extraction Failure</td>
+                    <td>Extraction Failure</td>
+                    <td>0791996.8</td>
+                    <td>Right</td>
+                    <td>24-2</td>
+                    <td>2012-11-30</td>
+                    <td>WithinNormalLimits</td>
+                    <td>0.20</td>
+                    <td>1.40</td>
+                    <td>Extraction Failure</td>
+                    <td>0</td>
+                    <td>0.00</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>2</td>
+                    <td>False</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      AC_20130809_1448_OS_SFA_CENTRAL_24_2_THRESHOLD_TEST_OS_1.2.276.0.75.2.5.80.25.3.200331032022040.22002785422940.26325080.pdf
+                    </td>
+                    <td>OXOOOO</td>
+                    <td>D</td>
+                    <td>810067.1</td>
+                    <td>Left</td>
+                    <td>24-2</td>
+                    <td>2013-08-09</td>
+                    <td>OutsideNormalLimits</td>
+                    <td>-2.98</td>
+                    <td>2.57</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>13.33</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>True</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>3</td>
+                    <td>True</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      B1_1228_OD_SFA_CENTRAL_24_2_THRESHOLD_TEST_OD_1.2.276.0.75.2.5.80.25.3.200331061420481.22002785422940.26355757.pdf
+                    </td>
+                    <td>Extraction Failure</td>
+                    <td>Extraction Failure</td>
+                    <td>0791996.8</td>
+                    <td>Right</td>
+                    <td>24-2</td>
+                    <td>2012-11-30</td>
+                    <td>WithinNormalLimits</td>
+                    <td>0.20</td>
+                    <td>1.40</td>
+                    <td>Extraction Failure</td>
+                    <td>0</td>
+                    <td>0.00</td>
+                    <td>True</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>False</td>
+                    <td>2</td>
+                    <td>False</td>
+                  </tr>
+                </tbody>
+              </table> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane h-100 fade" id="analysis" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="h-100 d-flex flex-column">
+          <div class="row ">
+            <div class="card">
+              <div class="row p-1">
+                <div class="col p-2 align-self-center list-group" id="analysisupload-box">
+                  <div class="row align-items-center">
+                    <div class="col text-center align-items-center">
+                      <i class="fa fa-file-csv fa-3x text-primary"></i>
+                      <p class="m-0 text-primary">Drop CSV</p>
+                    </div>
+                    <div class="col align-self-center text-center text-black-50">
+                      <h3>OR</h3>
+                    </div>
+                    <div class="col align-self-center text-center">
+                      <input type="file" id="analysisuploadbuttonid" style="display: none" accept="text/csv" />
+                      <label for="analysisuploadbuttonid" class="btn btn-primary"><i class="fa fa-file-csv"></i> Choose
+                        CSV</label>
+                      <div style="margin: 5px"></div>
+                      <button class="btn btn-primary" type="button" onclick="ImportFromGrading()"
+                        data-bs-placement="top" title="Moves data from Grading to Analysis Page">
+                        <i class="fas fa-brain"></i>
+                        Import From Grading</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-auto mx-2 align-self-center">
+                  <div class="row justify-content-center">
+
+                    <div class="col-auto align-self-baseline text-center">
+                      <h5 class="m-1">Progrssion Criteria</h5>
+                      <div class="form-group">
+                        <select class="form-select" id="analysisDropdown">
+                          <option>0</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col border-start border-white m-2"></div>
+
+                    <div class="col-auto align-self-baseline text-center">
+                      <h5 class="m-1">Group Patient By</h5>
+                      <div class="container text-start" data-bs-toggle="tooltip" title="Under Development - Deafults to Patient ID">
+                        <label class="form-check-label">
+                          <input class="form-check-input" type="radio" name="patientsort" id="analysisidradio"
+                            value="id" checked disabled/>
+                          Patient ID
+                        </label><br>
+                        <label class="form-check-label">
+                          <input class="form-check-input" type="radio" name="patientsort" id="analysisfolderradio"
+                            value="folder" disabled/>
+                          Folder Path
+                        </label>
+                      </div>
+
+                    </div>
+                    <div class="col border-start border-white m-2"></div>
+
+                    <div class="col-md-auto text-center">
+                      <h5 class="m-1" id="analysispdflistid">CSV accepted</h5>
+                      <button class="btn btn-danger" type="button" onclick="analysisclearButton()" data-bs-toggle="tooltip" title="Clears Output and Uploaded files">
+                        <i class="fas fa-trash"></i> Clear
+                      </button>
+                      <button class="btn btn-success" type="button" onclick="analysissubmitButton()" >
+                        <i class="fas fa-brain"></i> Analyse
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row flex-grow-1" style="height: 0px !important;">
+            <div id="analysistable-div" class="col h-100 mt-2 me-2">
+              <!-- Table here -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane h-100 fade" id="graphs" role="tabpanel" aria-labelledby="graphs-tab">
+        <h1 class="align-self-center">
+          Graph Page Under Construction
+        </h1>
+      </div>
+      <div class="tab-pane h-100 fade" id="settings" role="tabpanel" aria-labelledby="contact-tab">
+        <h1 class="align-self-center">
+          Settings Page Under Construction
+        </h1>
+      </div>
+    </div>
+
+    <div id="overlay"
+      class="col w-100 h-100 flex-column d-flex justify-content-center align-items-center text-center fade hide">
+
+      <h2>Loading...</h2><br>
+      <div class="lds-ellipsis">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div><br>
+      <div class="progress w-50">
+        <div id="loadingprogress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+          aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+      </div><br>
+      <p id="loadingtimeleft" class=" w-50 text-wrap"></p><br>
+      <p id="loadingoutput" class=" w-50 text-wrap"></p>
+
+    </div>
+    <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../node_modules/bootstrap-table/dist/bootstrap-table.js"></script>
+    <script src="tableExport.js"></script>
+    <script
+      src="../node_modules/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.js"></script>
+    <script src="../node_modules/bootstrap-table/dist/extensions/export/bootstrap-table-export.js"></script>
+    <script
+      src="../node_modules/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.js"></script>
+    <script>if (window.module) module = window.module;</script>
+</body>
+<script src="renderer.js"></script>
+
+</html>
