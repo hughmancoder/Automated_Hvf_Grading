@@ -1,8 +1,0 @@
-tesserOCR
-regex
-pydicom
-pillow
-opencv-python
-fuzzywuzzy
-fuzzysearch
-python-levenshtein

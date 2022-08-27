@@ -1,16 +1,17 @@
 from setuptools import setup, find_packages
 
 
-with open('README.rst') as f:
+with open('README.md') as f:
     readme = f.read()
 
-with open('LICENSE') as f:
-    license = f.read()
+# TODO: Add Liscense
+# with open('LICENSE') as f:
+#     license = f.read()
 
 setup(
-    name='sample',
+    name='automated_hvf_grading',
     version='0.1.0',
-    description='automated-hvf-grading',
+    description='Automates HVF Grading',
     long_description=readme,
     author='Hugh, Sonel',
     author_email='hugh.signoriello@gmail.com',

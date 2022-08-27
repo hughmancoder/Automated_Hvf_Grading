@@ -3,7 +3,7 @@ import pathlib
 import os
 import site
 
-class filterData:
+class FilterData:
     @staticmethod
     def mirror(matrix):
         r = 0
@@ -53,7 +53,7 @@ class filterData:
                         matrix[r][c] = level_map[str(matrix[r][c])]
 
             if eye == "Left":
-                matrix = filterData.mirror(matrix)
+                matrix = FilterData.mirror(matrix)
             return matrix
         except:
             print("Error: empty matrix unable to be processed")

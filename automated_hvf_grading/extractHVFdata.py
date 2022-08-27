@@ -12,9 +12,9 @@ import pathlib  # pathy
 import numpy as np
 
 # == Note ==
-# current class methods are static (for now) as we pass all funtion requisites as parameters
+# current class methods are static (for now) as we pass all function requisites as parameters
 
-class extractHVFData:
+class ExtractHVFData:
     def __init__(self):
         print("extraction started")
 
@@ -199,7 +199,7 @@ class extractHVFData:
     def readFile( image_path, patient_dictionary):
         global error
         try:
-            return extractHVFData.extractMatrix(image_path, patient_dictionary)
+            return ExtractHVFData.extractMatrix(image_path, patient_dictionary)
         except:
             error = True  # mark error so we pass over data frame
             print(

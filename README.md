@@ -11,13 +11,12 @@ https://github.com/msaifee786/hvf_extraction_script
 
   category 2) A cluster of at least 3 contiguous points in the same region depressed at P < 5%, with at least one these < 1%
 
-  category 3) A cluster of at least 3 contiguous points in the same region depressed at P < 5% AND (GHT = Outside Normal Limits OR PSD = P < 5%) 
+  category 3) A cluster of at least 3 contiguous points in the same region depressed at P < 5% AND (GHT = Outside Normal Limits OR PSD = P < 5%)
 
 ### To-do
-
 - [x] refactor code using OOP
 - [x] refactor into a module
-- [ ] get driver.py to run
+- [x] get driver.py to run
 - [ ] fix criteria in algorithm (< 5 % not 0.5 %) 
 
 ### intial bug fixes based on user requirements
@@ -35,6 +34,9 @@ https://github.com/msaifee786/hvf_extraction_script
 - [x] highlight/ 'select' a row of the table (ie an individual field) to make it easy to track when scrolling across
 - [x] column headings should be locked so when scrolling down the rows these still stay at the top
 - [x] implement a more intuitive drop down filter for right and left eye
+
+### notes
+- [ ] Some PDF are currupt and will always fail to be processed (tesseract)
 
 ### developer notes
 ```

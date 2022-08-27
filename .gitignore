@@ -2,10 +2,12 @@ singleField/
 **/singleField/
 
 automated_hvf_grading.egg-info/*
+automated_hvf_grading/__pycache__
 build/*
 dist/*
 
 hvf_extraction_script/hvf_extraction_script.egg-info/*
-hvf_extraction_script/build/*
-hvf_extraction_script/dist/*
-.vscode/*
+hvf_extraction_script/build
+hvf_extraction_script/dist
+.vscode/launch.json
+.vscode/settings.json
