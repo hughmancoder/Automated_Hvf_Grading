@@ -8,18 +8,154 @@ from pdf2image import convert_from_path
 from PIL import Image  # pillow
 import datetime
 import os
+import cv2
 import pathlib  # pathy
 import numpy as np
 
 # == Note ==
 # current class methods are static (for now) as we pass all function requisites as parameters
 
+
 class ExtractHVFData:
     def __init__(self):
         print("extraction started")
 
     @staticmethod
-    def convDateFormat(self, Date):  # change format to take in string
+    def read_image_from_pdf(file_path):
+        pdf = convert_from_path(file_path, single_file=True)
+        #pdf = convert_from_path(file_path, single_file=True, poppler_path="./src/poppler-0.68.0/bin")
+        cv_image = np.array(pdf[0]) 
+        return cv_image[:, :, ::-1]
+    
+    @staticmethod
+    def LevelToPercentage(value):
+        if value == "5":
+            return 5
+        elif value == "2":
+            return 2
+        elif value == "1": 
+            return 1
+        elif value == "x":
+            return 0.5
+        else: # handles "."
+            return "0"
+
+    def extractMatrix(self, file_path):
+        """takes in a png image path or pdf path and returns extracted hvf pattern deviation matrix 
+            we can also extract all user data from hvf_obj json and any other needed user arrays
+        
+        Args:
+            file_path (string)
+            userData (object)
+
+        Returns:
+            matrix (list of lists)
+        """
+        try:
+            if file_path.endswith(".pdf"):
+                    hvf_img = self.read_image_from_pdf(file_path)
+            else:
+                hvf_img = File_Utils.read_image_from_file(file_path)
+
+            # convert to json format 
+            hvf_obj = Hvf_Object.get_hvf_object_from_image(hvf_img)
+            serialized_string = hvf_obj.serialize_to_json();
+
+        except Exception as e:
+            print("Error: file not extractable", e)
+            return []
+
+        arr_obj = hvf_obj.pat_dev_percentile_array
+        plot_object = arr_obj.plot_array
+        rows, cols = plot_object.shape
+
+        #shows matrix extraction as a string
+        print(hvf_obj.get_display_pat_perc_plot_string())
+
+        # square irregular matrix by padding with zero
+        matrix = np.zeros((rows, cols))
+        for r in range(rows):
+            for c in range(cols):
+                # matrix[r, c] = self.LevelToPercentage(int(plot_object[r, c].get_enum()))
+                # print(plot_object[r, c,].get_display_string())
+                matrix[c,r] = self.LevelToPercentage(plot_object[r, c].get_display_string())
+        return matrix.tolist()
+        
+    # delete this
+    def extractMatrixOld(self, file_path, temp_dictionary):
+        """takes in a png image path or pdf path and returns extracted hvf matrix 
+
+        Args:
+            file_path (string)
+            userData (object)
+
+        Returns:
+            matrix (list of lists)
+        """
+
+        
+        # if os.path.splitext(file_path)[-1].lower() == ".pdf":
+        try:
+            if file_path.endswith(".pdf"):
+                hvf_img = File_Utils.read_image_from_file(file_path)  # change to file if not working
+                print(hvf_img)
+            else:
+                hvf_img = File_Utils.read_image_from_file(file_path)
+
+            hvf_obj = Hvf_Object.get_hvf_object_from_image(hvf_img)
+            hvf_obj.serialize_to_json()
+
+        except Exception as e:
+            print("Error: ", e)
+            hvf_obj = None
+
+        try:
+            self.extractMetadata(
+                hvf_obj, temp_dictionary
+            )  # function to extract statistics form HVF file
+        except Exception as e:
+            print("Error: meta-data unable to be extracted: " + e)
+
+        # anonymiseData(image_path)
+
+        devplot = hvf_obj.pat_dev_percentile_array
+        devplotshape = devplot.plot_array.shape
+        # pad with zeros for standard 10 * 10 formatList(result)
+        array = np.zeros((10, 10))
+        for i in range(devplotshape[0]):
+            for j in range(devplotshape[1]):
+                array[j, i] = int(
+                    devplot.plot_array[i, j].get_enum()
+                )  # transpose array
+
+        hvf_obj.get_display_raw_val_plot_string()
+        matrix = array.tolist()  # convert array into a 2D list as this is Algo format
+        return matrix
+
+    def getSingleFieldPaths(self, size):
+        """generates specified list of absolute paths from singleField samples
+
+        Args:
+            sample size
+
+        Returns:
+            list of absolute file paths
+        """
+        # may only work in development environment
+        file_batches = os.walk('../singleField')
+        absolute_path = os.path.abspath("..") + "/singleField"
+        try:
+            files = list(file_batches)[0][2]
+            if size < len(files):
+                return [absolute_path + "/" + f for f in files][:size]
+            else:
+                print("Error: sample size larger than number of files")
+        except:
+            return []
+
+    @staticmethod
+    def convDateFormat(self, Date):  
+    # change  date format to take in string
         months = [
             "Jan",
             "Feb",
@@ -70,66 +206,20 @@ class ExtractHVFData:
         img.save(image_path)
     """
     @staticmethod
-    def filterPDF(List):  # removes ensures that only pdf's are read
-        for i in List:
-            if ".png" in i:
-                List.remove(i)
+    def filterPDF(List):
+        """ensures only pdfs are read
+
+        Args:
+            List (_type_): _description_
+
+        Returns:
+            list: only .pdf files
+        """
+        for f in List:
+            if f.endswith(".png"):
+                List.remove(f)
         return List
-
-    @staticmethod
-    def ExtractPDF(pdf_path, name):
-        try:
-            if os.path.exists(pdf_path):  # checking if path is valid
-                # patient_dictionary["FILENAME"] = pdf_path
-                pages = convert_from_path(pdf_path)
-                cwd = pathlib.Path().resolve()  # resets path
-                cwd = pathlib.Path().cwd()
-                save_path = cwd + "/SingleField/ImageData"
-
-                for img in pages:  # looping through in case it has 2 pages
-                    name = name.replace("pdf", "png")
-                    save_path = save_path + "/" + name
-                    img.save(save_path)  # img.save(name)
-                    return save_path
-            else:
-                print("Error: File path does not exist")
-                return ""
-        except:
-            print("Error: df2image library can not read pdf, convert_from_path error")
-            return ""
-
-    def extractMatrix(self, image_path, temp_dictionary):
-        # pdf extraction here
-        if os.path.splitext(image_path)[-1].lower() == ".pdf":
-            hvf_img = File_Utils.read_image_from_pdf(
-                image_path
-            )  # change to file if not working
-        else:
-            hvf_img = File_Utils.read_image_from_file(image_path)
-
-        hvf_obj = Hvf_Object.get_hvf_object_from_image(hvf_img)
-        hvf_obj.serialize_to_json()
-
-        try:
-            self.extractMetadata(
-                hvf_obj, temp_dictionary
-            )  # function to extract statistics form HVF file
-        except Exception as e:
-            print("Error: meta data unable to be extracted: " + e)
-        # anonymiseData(image_path) #blanks out sensitive information
-        devplot = hvf_obj.pat_dev_percentile_array
-        devplotshape = devplot.plot_array.shape
-        array = np.zeros(
-            (10, 10)
-        )  # pad with zeros for standard 10 * 10 formatList(result)
-        for i in range(devplotshape[0]):
-            for j in range(devplotshape[1]):
-                array[j, i] = int(
-                    devplot.plot_array[i, j].get_enum()
-                )  # transpose array
-        matrix = array.tolist()  # convert array into a 2D list as this is Algo format
-        return matrix
-
+    
     def checkReliability(self, FPOS, FixationLoss, GHT):  # fix criteria
         reliable = False
         if FixationLoss < 33 and FPOS < 33:
@@ -137,7 +227,7 @@ class ExtractHVFData:
         return reliable
 
     # feeding through file object to be used
-    def extractMetadata(self, hvf_obj, patient_dictionary):
+    def extractMetadataOld(self, hvf_obj, patient_dictionary):
         try:
             patient_dictionary["NAME"] = hvf_obj.metadata[Hvf_Object.KEYLABEL_NAME]
             patient_dictionary["DOB"] = hvf_obj.metadata[Hvf_Object.KEYLABEL_DOB]
@@ -196,14 +286,14 @@ class ExtractHVFData:
 
     # this function runs all the functions above
     @staticmethod
-    def readFile( image_path, patient_dictionary):
-        global error
+    def readFile(image_path, patient_dictionary):
+    
         try:
             return ExtractHVFData.extractMatrix(image_path, patient_dictionary)
         except:
-            error = True  # mark error so we pass over data frame
+            # error = True  # mark error so we pass over data frame
             print(
-                "Error: Error occured in extracting matrix from VF file as file: "
+                "Error: Error in extractHVFdata occured in extracting matrix from VF file as file: "
                 + image_path
                 + " not in readable format"
             )

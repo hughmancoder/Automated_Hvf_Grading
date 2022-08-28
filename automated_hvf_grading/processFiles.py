@@ -4,7 +4,7 @@ import importlib
 import os
 
 # == dependencies == 
-from automated_hvf_grading.extractHVFdata import ExtractHVFData
+from automated_hvf_grading.extractHVFData import ExtractHVFData
 from automated_hvf_grading.filterData import FilterData
 from joblib import Parallel, delayed
 from automated_hvf_grading.hvfAlgorithm import HVFAlgorithm
@@ -36,9 +36,11 @@ class ProcessFiles:
             "FIXATION_LOSS": "",
             "RELIABLE": False,
         }
+        error = False
+        
         patient_list = ["Error"] * 23
         # varible to keep track of error in extraction (don't append to df if error is true)
-        error = False
+        
         temp_dictionary["FILENAME"] = os.path.basename(filepath)
 
         mat = ExtractHVFData.readFile(filepath, temp_dictionary)

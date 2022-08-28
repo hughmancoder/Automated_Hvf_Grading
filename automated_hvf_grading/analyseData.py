@@ -1,7 +1,7 @@
 import pandas as pd
 
 # == checks for glaucoma progression == 
-class AnalyseProgression:
+class AnalyseData:
     def addProgressionFromIndex(
         self, df, index, progressive_regions, eye
     ):  # adds progression criteria to df
@@ -29,8 +29,8 @@ class AnalyseProgression:
         except Exception as e:
             print("Error: could not add progression criteria to df" + e)
             return df
-    @staticmethod
-    def AnalyseFiles(id, df):
+    
+    def AnalyseFiles(self, id, df):
         """[Analyses id in df and returns analysed sub-df]
 
         Args:
@@ -42,10 +42,10 @@ class AnalyseProgression:
         """
         eyes = ["Left", "Right"]
         for eye in eyes:  # analyse left and right eye seperately
-            df = AnalyseProgression.sortByID(df, id)
-            (progressive_regions, progression_index) = AnalyseProgression.checkDefectProgression(df, eye)
+            df = self.sortByID(df, id)
+            (progressive_regions, progression_index) = self.checkDefectProgression(df, eye)
             # returns subDf
-            return AnalyseProgression.addProgressionFromIndex(df, progression_index, progressive_regions, eye)
+            return self.addProgressionFromIndex(df, progression_index, progressive_regions, eye)
 
     # all python arguments are passed by reference / memory addresses (so large data is not an issue)
     @staticmethod

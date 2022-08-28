@@ -1,6 +1,6 @@
 singleField/
 **/singleField/
-
+faultyFields/
 automated_hvf_grading.egg-info/*
 automated_hvf_grading/__pycache__
 build/*

@@ -17,7 +17,12 @@ https://github.com/msaifee786/hvf_extraction_script
 - [x] refactor code using OOP
 - [x] refactor into a module
 - [x] get driver.py to run
-- [ ] fix criteria in algorithm (< 5 % not 0.5 %) 
+- [x] fix criteria in algorithm (< 5 % not 0.5 %) 
+- [ ] patient data class with getter and setter methods
+- [ ] get extraction to work
+- [ ] refactor: remove temp_dictionary and use patientData class
+- [ ] refactor: make dataFrame class and have dataFrame methods -- integrate data methods
+
 
 ### intial bug fixes based on user requirements
 - [ ] MD% and PSD% in the criteria for abnormal (criteria 3) [Fix psd < 5%]
@@ -29,13 +34,15 @@ https://github.com/msaifee786/hvf_extraction_script
 - [ ] Progression column: comment on what determined whether output if true or false
 - [ ] Progression analysis inconsistent (errors sometimes occur)
 
-### GUI
+### GUI / Sonel
+- [x] parseDataFrame run data is not defined
 - [x] False negatives (list reliability index on GUI)
 - [x] highlight/ 'select' a row of the table (ie an individual field) to make it easy to track when scrolling across
 - [x] column headings should be locked so when scrolling down the rows these still stay at the top
 - [x] implement a more intuitive drop down filter for right and left eye
 
 ### notes
+- [ ] we are extracting only pattern deviation matricies however this package is capable of extracting, processing and analysing other matricies
 - [ ] Some PDF are currupt and will always fail to be processed (tesseract)
 
 ### developer notes

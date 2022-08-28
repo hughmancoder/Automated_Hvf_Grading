@@ -10,3 +10,4 @@ python-levenshtein
 pdf2image
 numpy
 joblib
+IPython
