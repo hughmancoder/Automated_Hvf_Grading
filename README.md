@@ -47,6 +47,12 @@ https://github.com/msaifee786/hvf_extraction_script
   "LM": "Inferior Bjerrum",
   "UR": "Superior temporal wedge",
   "LR": "Inferior temporal wedge",
+  
+  ### left eye
+ ![image info](images/lefteyeregions.png)
+ 
+ ### right eye
+ ![image info](images/righteyeregions.png)
       
 ### To-do
 - [x] refactor code using OOP
@@ -89,5 +95,6 @@ conda install pip
 conda install -c conda-forge tesseract
 pip install hvf-extraction-script
 ```
-
+### GUI demo
+![image info](images/GUIGrading.png)
 **select python interpreter: automated-hvf-grading**
