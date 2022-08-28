@@ -1,9 +1,10 @@
 import importlib
 import pathlib
+import datetime
 import os
 import site
 
-class FilterData:
+class ProcessData:
     @staticmethod
     def mirror(matrix):
         r = 0
@@ -13,12 +14,18 @@ class FilterData:
         return matrix
 
     @staticmethod
-    def PrintMatrix(mat):  # prints of matrix in easy to read format
+    def PrintMatrix(mat):  
+        """prints of matrix in easy to read format_summary_
+
+        Args:
+            mat (list)
+        """
         rows = len(mat[0])
         cols = len(mat)
-        # the lines of code below are mostly ornamental
+        
         for r in range(rows):
             if r == 5:
+                # ornaments for formatting spacing
                 print("\n\n" + "-----------" + ("---" * cols) + "\n")
             else:
                 print("\n")
@@ -148,6 +155,16 @@ class FilterData:
         except:
             return "error"
 
+    # @static method
+    def checkReliability(FPOS, FixationLoss, GHT): 
+        """
+        check if user
+        """
+        reliable = False
+        if FixationLoss < 33 and FPOS < 33:
+            reliable = True
+        return reliable
+
     def CheckCriteria(psd, ght):  # checks which criteria to run on matrix
         # print("Info: ght, psd: ", ght,psd)
         # print(type(int(psd)))
@@ -167,3 +184,71 @@ class FilterData:
                 return 3
 
         return 2  # criteria 2 default
+
+    @staticmethod
+    def filterPDF(List):
+        """ensures only pdfs are read
+
+        Args:
+            List (_type_): _description_
+
+        Returns:
+            list: only .pdf files
+        """
+        for f in List:
+            if f.endswith(".png"):
+                List.remove(f)
+        return List
+
+    @staticmethod
+    def convDateFormat(Date):  
+    # change  date format to take in string
+        months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ]  # enumerate list of months
+        try:
+            year = int(Date[-4:])
+            month = Date[:3]
+            day = int(Date[3:6])
+            for index, item in enumerate(
+                months
+            ):  # converting string to numerical value of month
+                if item == month:
+                    month = index + 1
+            date = datetime.datetime(year, month, day)
+            return date
+        except:
+            year = int(Date[-4:])
+            month = Date[:3]
+            day = int(Date[3:5])
+            for index, item in enumerate(
+                months
+            ):  # converting string to numerical value of month
+                if item == month:
+                    month = index + 1
+            date = datetime.datetime(year, month, day)
+            return date
+
+        else:
+            print("Error: Format error, unable to convert date to datetime object")
+            return Date
+
+    """
+    def anonymiseData(image_path):
+        img = Image.open(image_path).convert('RGB')
+        img_arr = np.array(img)
+        img_arr[100 : 250, 100 : 500] = (0, 0, 0)
+        img = Image.fromarray(img_arr)
+        img.save(image_path)
+    """

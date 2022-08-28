@@ -1,5 +1,7 @@
 singleField/
 **/singleField/
+**/DS_Store
+DS_Stpre
 faultyFields/
 automated_hvf_grading.egg-info/*
 automated_hvf_grading/__pycache__
