@@ -72,7 +72,7 @@ class DataFrame:
         Returns:
             sub dataframe
         """
-        return self.renameHemifields(self.sortByTestDate(df[df["eye"] == eye]), eye)
+        return self.sortByTestDate(df[df["eye"] == eye])
 
     def renameHemifields(self, df, eye):
         rename = self.locationLabels(eye)
@@ -84,96 +84,85 @@ class DataFrame:
         return self.rightLabels
 
     # progressor criteria
-    def progressorCriteria(self, df):
+    def progressorCriteria(self, df, eye):
         """takes in df and adds two new columns 
             a boolean to determine whether there is a progression detected,
             a date to determine the date of first progression onset
             and the total time the progrssion has been present in patient
         Args:
-            df (_type_): _description_
+            df (dataframe): updated dataframe
 
         Returns updated df
         """
-    
-    # @staticmethod
-    # def checkDefectProgression(self, df, eye):  # checking progressor criteria
-    #     df = self.filterByEye(df, eye)
-    #     l = df["isAbnormal"].values
-    #     length = len(l)
-    #     progression_index = -1
-    #     progressive_regions = {
-    #         "UL": -1,
-    #         "LL": -1,
-    #         "UM": -1,
-    #         "UC": -1,
-    #         "LC": -1,
-    #         "LM": -1,
-    #         "UR": -1,
-    #         "LR": -1,
-    #     }
-    #     for i in range(length - 2):
-    #         # check if at least 2 our of 3 consecutive progressions are abnormal (True) -> index: 1&2; 2&3
-    #         if (l[i] and l[i + 1]) or (l[i + 1] and l[i + 2]):
-    #             progression_index = i  # get return index of first progression
-
-    #     if progression_index != -1:  # if we find a progression
-    #         regions = ["UL", "LL", "UM", "UC", "LC", "LM", "UR", "LR"]
-    #         for region in regions: 
-    #             l = df[region].values  # converts column to a list
-    #              # progressor criteria: any 2 defective scans out of 3 consecutive chronological samples
-    #             if (
-    #                 (l[i] and l[i + 1])
-    #                 or (l[i] and l[i + 2])
-    #                 or (l[i + 1] and l[i + 2])
-    #             ): 
-                   
-    #                 progressive_regions[region] = i
-    #     return (progressive_regions, progression_index)
-
-"""
-class AnalyseData:
-    def addProgressionFromIndex(
-        self, df, index, progressive_regions, eye
-    ):  # adds progression criteria to df
-        df["Progression"] = False
-        df["progressive_regions"] = ""  # intialise as empty
-        df["Technical_progression"] = ""  # also intialise as empty
-        if index <= 0:
-            print("Info: No progression indicated")
-            return df
-        try:
-            rows = len(df.index)
-            pd.options.mode.chained_assignment = (
-                None  # prevents pandas warning for chained assignment
-            )
-            df["Progression"].iloc[index:rows] = True
-            for key, value in progressive_regions.items():
-                if 0 <= value <= rows:
-                    df["progressive_regions"].iloc[value:rows] += " " + \
-                        str(key)
-                    df["Technical_progression"].iloc[
-                        value:rows
-                    ] += " " + self.addMedicalTerm(str(key), eye)
+        p = df["is_abnormal"].values # progression 
+        number_of_samples = len(p) 
+        if number_of_samples <= 2:
+            print(f"Info: {number_of_samples} is not enough samples to evaluate progression criteria")
             return df
 
-        except Exception as e:
-            print("Error: could not add progression criteria to df" + e)
-            return df
-    
-    def analyseFiles(self, id, df):
-        [Analyses id in df and returns analysed sub-df]
+        """
+        # testing if there is a onset of defects in any of the regions
+        for i in range(number_of_samples - 2):
+             if (p[i] and p[i + 1]) or (p[i] and p[i + 2]) or (p[i + 1] and p[i + 2]):
+                progression = True
+                break
+        """
 
-        Args:
-            id ([var]): [ID to be analysed]
-            df ([df]): [dataframe to be analysed from]
+        # save index of first progression
+        region_progressions = {
+            "UL": -1,
+            "LL": -1,
+            "UM": -1,
+            "UC": -1,
+            "LC": -1,
+            "LM": -1,
+            "UR": -1,
+            "LR": -1
+        }
 
-        Returns:
-            [df]: [df: dataframe with added data]
-        
-        eyes = ["Left", "Right"]
-        for eye in eyes:  # analyse left and right eye seperately
-            df = self.sortByID(df, id)
-            (progressive_regions, progression_index) = self.checkDefectProgression(df, eye)
-            # returns subDf
-            return self.addProgressionFromIndex(df, progression_index, progressive_regions, eye)
-"""
+        first_progression_date = "-"
+        regions = df.loc[:, "UL" : "LR" :]
+        v = regions.values.tolist()
+
+        # checking for any 2 abnormal scans out of 3 chronological scans
+        for r in range(len(v) - 2):
+            for c in range(8): 
+                if (v[r][c] and v[r + 1][c]):
+                    region = list(region_progressions.values())[c]
+                    if(region_progressions[region] == -1): 
+                        region_progressions[region] = r + 1
+
+                elif(v[r][c] and v[r + 2][c]):
+                    region = list(region_progressions.values())[c]
+                    if(region_progressions[region] == -1): 
+                        region_progressions[region] = r + 2
+
+                elif(v[r + 1][c] and v[r + 2][c]):
+                    region = list(region_progressions.values())[c]
+                    if(region_progressions[region] == -1): 
+                        region_progressions[region] = r + 2
+                    
+            print(region_progressions)
+            # adding progression data to df
+            num_rows = len(df.index)
+            df["progression"] = False
+            df["progressive_regions"] = ""
+            df["progression_date"] = ""
+
+            first_progression = min(region_progressions.values()) # index of first progrssion
+
+            if first_progression >= 0:
+                try:
+                    df["progression"].iloc[first_progression:] = True
+                    df["progresson_date"].iloc[first_progression:] = df["test_date"].iloc[first_progression]
+                    for key, val in region_progressions.items():
+                        print(key, val)
+                        if val != -1:
+                            df["progressive_regions"].iloc[val:] = " " + str(key)
+                except Exception as e:
+                    print("Error: ", e)
+                    df["progression"].iloc[first_progression:] = True
+                    self.renameHemifields(df, eye)
+
+            return self.renameHemifields(df, eye)
+                        

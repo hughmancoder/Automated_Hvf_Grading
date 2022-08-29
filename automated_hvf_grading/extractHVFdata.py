@@ -150,7 +150,15 @@ class ExtractHVFData:
 
         try:
             user.rx = hvf_obj.metadata[Hvf_Object.KEYLABEL_RX]
-            user.vfi = hvf_obj.metadata[Hvf_Object.KEYLABEL_VFI]
+
+            vfi = hvf_obj.metadata[Hvf_Object.KEYLABEL_VFI]
+            if len(vfi) >= 4 and vfi[:4] == "24-2":
+                user.vfi_24_2 = vfi[5:]
+                # user.vfi = "N/A"
+            else:
+                user.vfi = vfi.replace(":","")
+                # user.vfi_24_2 = "N/A"
+
         except Exception as e:
             print("Error: rx and/or vfi not extractable" + str(e))
 
