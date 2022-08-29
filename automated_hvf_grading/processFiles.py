@@ -34,7 +34,7 @@ class ProcessFiles:
         user.filename = os.path.basename(file_path)
         user = self.extractor.extractData(file_path, user) # update matrix and meta data
 
-        if user.pattern_deviation_matrix == "unknown":
+        if user.pattern_deviation_matrix == "N/A":
             print("Error: cannot run algorithm as matrix is not extractable")
             user.error = True
             return user

@@ -1,31 +1,32 @@
 # used to store patient data during extraction
 class User:
     def __init__(self):
-        self.filename = "unknown"
-        self.name = "unknown"
-        self.dob = "unknown"
-        self.id = "unknown"
-        self.eye = "unknown"
-        self.test_date = "unknown"
+        self.filename = "N/A"
+        self.name = "N/A"
+        self.dob = "N/A"
+        self.id = "N/A"
+        self.eye = "N/A"
+        self.test_date = "N/A"
         self.pattern_deviation_matrix = []
-        self.rx = "unknown"
-    
-        self.vfi = "unknown"
-        self.ght = "unknown"
+        self.rx = "N/A"
 
-        self.md_perc = "unknown"
-        self.md_db = "unknown"
+        self.vfi_24_2 = "N/A"
+        self.vfi = "N/A"
+        self.ght = "N/A"
 
-        self.psd_perc = "unknown"
-        self.psd_db = "unknown"
+        self.md_perc = "N/A"
+        self.md_db = "N/A"
 
-        self.false_pos = "unknown"
-        self.false_neg = "unknown"
+        self.psd_perc = "N/A"
+        self.psd_db = "N/A"
 
-        self.fixation_loss = "unknown"
-        self.reliable = "unknown" # determined by false_pos and fixation_loss values
-        self.field_size = "unknown"
-        self.algorithm_criteria = "unknown" # category 2 or 3 as specified
+        self.false_pos = "N/A"
+        self.false_neg = "N/A"
+
+        self.fixation_loss = "N/A"
+        self.reliable = "N/A" # determined by false_pos and fixation_loss values
+        self.field_size = "N/A"
+        self.algorithm_criteria = "N/A" # category 2 or 3 as specified
         
         
         self.error = False # unreliable due to error in extracting values
@@ -39,6 +40,6 @@ class User:
         self.UR = False
         self.LR = False
         
-        self.is_abnormal = "unknown"
+        self.is_abnormal = "N/A"
 
         
