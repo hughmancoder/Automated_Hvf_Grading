@@ -22,6 +22,8 @@ https://github.com/msaifee786/hvf_extraction_script
 
     progression: a chronological progression of abnormal eye scans
 
+    progressor criteria: any 2 defective scans out of 3 consecutive chronological samples
+
 ### short hand
   matrix sub-regions: ul, ll, um, uc, lc, lm, ur, lr
   upper left, lower left, upper middle, upper central, lower central, lower middle, upper right, lower right
@@ -53,6 +55,15 @@ https://github.com/msaifee786/hvf_extraction_script
  
  ### right eye
  ![image info](images/righteyeregions.png)
+
+
+ ### questions
+ - what do we do if we cannot extract psd percentage? Reliability is determined if psd < 33% or ght outside limits so if we can't determine this criteria should we use 2 or 3 as deafult or just skip this scan and move on to the next one?
+
+ - A progression is marked as 2/3 consecutive chronological defects right?
+
+ - 
+
       
 ### To-do
 - [x] refactor code using OOP
@@ -61,13 +72,15 @@ https://github.com/msaifee786/hvf_extraction_script
 - [x] fix criteria in algorithm (< 5 % not 0.5 %) 
 - [x] get extraction to work
 - [x] refactor: remove temp_dictionary and use patientData class
-- [x] refactor: make dataFrame class and have dataFrame methods -- 
+- [x] refactor: make dataFrame class and have dataFrame methods 
+- [ ] refactor analyseData, build dataFrame into DataFrame class
 
 ### intial bug fixes based on user requirements
 - [x] MD% and PSD% in the criteria for abnormal (criteria 3) [Fix psd < 5%]
-- [ ] region defect not detected upon criteria 2 and 3 (see file error2.pdf)
+- [x] region defect not detected upon criteria 2 and 3 (see file error2.pdf)
 - [ ] location labels mixed up (nasal step labeled as temporal wedge) 
-- [ ] extraction failure labels (unable to extract -> more specific label: 'too severe to analyse')
+- [x] more specific and reliable error messages
+- [x] extraction failure labels (unable to extract -> more specific label: 'too severe to analyse')
 - [ ] VFI extraction (VFI24-2 and VFI are varying formats)
 - [x] reliability = FNeg, FPos, FLoss all < 33 %
 - [ ] Progression column: comment on what determined whether output if true or false
@@ -81,10 +94,22 @@ https://github.com/msaifee786/hvf_extraction_script
 - [x] implement a more intuitive drop down filter for right and left eye
 - [ ] absolutely all user object variables displayed on GUI output
 
+Fix the following library aspects:
+Error: ght unable to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_GHT'
+Error: rx and/or vfi not extractable
+Error: metadata md % not able to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_MDP'
+Error: metadata psd % not able to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_PSDP'
+
 ### notes / issues
+__sample field attached to email___
+- [ ] the issue with errorSample is that the psd % cannot be properly read or ght.Therefore we cannot determine if criteria 3 is valid so I coded the algorithm to  default to criteria 2
+
+
+
 - [ ] we are extracting only pattern deviation matricies however this package is capable of extracting, processing and analysing other matricies
 - [ ] Some PDF are corrupt and will always fail to be processed (tesseract)
 - [ ] ght is commonly unable to be extracted, the extraction mechanism/code should be looked into in more detail
+
 
 ### developer notes
 to run library environment: 

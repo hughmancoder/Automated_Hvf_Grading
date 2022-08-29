@@ -5,11 +5,16 @@ import os
 
 # == dependencies == 
 from automated_hvf_grading.extractHVFData import ExtractHVFData
-from automated_hvf_grading.processData import processData
+from automated_hvf_grading.processData import ProcessData
 from joblib import Parallel, delayed
 from automated_hvf_grading.hvfAlgorithm import HVFAlgorithm
 
+
 class ProcessFiles:
+    def __init__(self):
+        # instantiating objects
+        self.extractor = ExtractHVFData()
+
     def runFile(self, file_path, user):
         """driver to the program, runs a single sample and calls functions
 
@@ -20,12 +25,14 @@ class ProcessFiles:
         Returns:
             user (object): updated
         """
-        # updating data into user object
-        user.file_path = file_path
+        # check valid path first
+        if os.path.exists(file_path) == False:
+            print("Error: invalid file path")
+            user.error = True
+            return user
+        
         user.filename = os.path.basename(file_path)
-
-        # update matrix and meta data
-        user = ExtractHVFData.extractData(file_path, user)
+        user = self.extractor.extractData(file_path, user) # update matrix and meta data
 
         if user.pattern_deviation_matrix == "unknown":
             print("Error: cannot run algorithm as matrix is not extractable")
@@ -33,26 +40,27 @@ class ProcessFiles:
             return user
 
         if user.eye == "Left":
-            user.matrix = processData.mirrorYAxis(user.matrix)
+            user.pattern_deviation_matrix = ProcessData.mirrorYAxis(user.pattern_deviation_matrix)
         elif user.eye != "Right": 
             user.error = True
             print("Error: unable to distinguish if eye is left or right")
 
-        user = processData.DetermineCriteria(user)
+        user = ProcessData.DetermineCriteria(user)
         
         try:
             Algorithm = HVFAlgorithm(user.pattern_deviation_matrix, user.eye, user.criteria)
-            user.abnormal_regions = Algorithm.run()
+            abnormal_regions = Algorithm.run()
         except Exception as e:
             print("Error: unable to run algorithm", str(e))
             user.error = True
+            return user
 
-        # check result of abnormal regions
+        # check result of abnormal regions and update user dictionary
         is_abnormal = False
-        for region, abnormal in user.abnormal_regions.items()
+        for region, abnormal in abnormal_regions.items():
+            setattr(user, region, abnormal)
             if abnormal:
                 is_abnormal = True
-                break
         user.is_abnormal = is_abnormal
 
         return user

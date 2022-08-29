@@ -22,7 +22,7 @@ class ExtractHVFData:
         return cv_image[:, :, ::-1]
     
     @staticmethod
-    def LevelToPercentage(value):
+    def levelToPercentage(value):
         if value == "5":
             return 5
         elif value == "2":
@@ -32,7 +32,7 @@ class ExtractHVFData:
         elif value == "x":
             return 0.5
         else: # handles "."
-            return "0"
+            return 0
 
     def extractData(self, file_path, user):
         """takes in a png image path or pdf path and returns extracted hvf 
@@ -54,8 +54,7 @@ class ExtractHVFData:
 
             # convert to json format 
             hvf_obj = Hvf_Object.get_hvf_object_from_image(hvf_img)
-            serialized_string = hvf_obj.serialize_to_json();
-
+            
         except Exception as e:
             print("Error: file not extractable", e)
             return user
@@ -65,19 +64,22 @@ class ExtractHVFData:
         arr_obj = hvf_obj.pat_dev_percentile_array
         plot_object = arr_obj.plot_array
         rows, cols = plot_object.shape
-
+        
+        """
+        # show extractable figures as json (Hack)
+        print(hvf_obj.serialize_to_json());
         # shows matrix extraction as a string
-        # print(hvf_obj.get_display_pat_perc_plot_string())
+        serialized_string = hvf_obj.serialize_to_json();
+        print(hvf_obj.get_display_pat_perc_plot_string())
+        """
 
         # square irregular matrix by padding with zero
         matrix = np.zeros((rows, cols))
         for r in range(rows):
             for c in range(cols):
-                # matrix[r, c] = self.LevelToPercentage(int(plot_object[r, c].get_enum()))
-                # print(plot_object[r, c,].get_display_string())
-                matrix[c,r] = self.LevelToPercentage(plot_object[r, c].get_display_string())
+                matrix[c,r] = self.levelToPercentage(plot_object[r, c].get_display_string())
 
-        user.matrix = matrix.tolist()
+        user.pattern_deviation_matrix = matrix.tolist()
         return user
         
     def getSingleFieldPaths(self, size):
@@ -142,7 +144,7 @@ class ExtractHVFData:
 
         try:
             user.md_db = hvf_obj.metadata[Hvf_Object.KEYLABEL_MD]
-            user.pdf_db = hvf_obj.metadata[Hvf_Object.KEYLABEL_PSD]
+            user.psd_db = hvf_obj.metadata[Hvf_Object.KEYLABEL_PSD].replace(":", "")
         except:
             print("Error: metadata db statistics not able to be extracted")
 
@@ -150,13 +152,17 @@ class ExtractHVFData:
             user.rx = hvf_obj.metadata[Hvf_Object.KEYLABEL_RX]
             user.vfi = hvf_obj.metadata[Hvf_Object.KEYLABEL_VFI]
         except Exception as e:
-            print("Error: rx and/or vfi no extractable")
+            print("Error: rx and/or vfi not extractable" + str(e))
 
         try:
             user.md_perc = hvf_obj.metadata[Hvf_Object.KEYLABEL_MDP]
+        except Exception as e:
+            print("Error: metadata md % not able to be extracted" + str(e))
+
+        try:
             user.psd_perc = hvf_obj.metadata[Hvf_Object.KEYLABEL_PSDP]
         except Exception as e:
-            print("Error: metadata % statistics not able to be extracted" + str(e))
+            print("Error: metadata psd % not able to be extracted" + str(e))
 
         try:
             user.false_neg = int(hvf_obj.metadata[Hvf_Object.KEYLABEL_FALSE_NEG].rstrip("%"))
@@ -165,6 +171,15 @@ class ExtractHVFData:
             user.fixation_loss = round((int(numerator) / int(denominator)) * 100, 2)  # convert to %
         except Exception as e:
             print("Error: metadata extraction" + str(e))
+
+        # other extractable data
+        """
+        KEYLABEL_STRATEGY
+        KEYLABEL_TEST_DURATION
+        KEYLABEL_PUPIL_DIAMETER
+        KEYLABEL_LATERALITY
+        KEYLABEL_FOVEA
+        """
 
         # check if statistical values are reliable
         user.reliable = self.checkReliability(user.false_pos, user.fixation_loss, user.false_neg)

@@ -4,8 +4,7 @@ import datetime
 import os
 import site
 
-class ProcessData:
-
+class ProcessData:  
     # as left eye is a mirror of right we mirror the matrix
     @staticmethod   
     def mirrorYAxis(matrix):
@@ -22,6 +21,8 @@ class ProcessData:
         Args:
             mat (list)
         """
+        if len(mat) == 0: return
+
         rows = len(mat[0])
         cols = len(mat)
         
@@ -89,19 +90,20 @@ class ProcessData:
            Criteria 3: a cluster of 3 contiguous points all depressed at p < 5% 
            AND (GHT abnormal or PSD < 5%)
         Args:
-            psd (_type_): string
-            ght (_type_): string
+           user (object)
         """
-        ght = user.ght
-
+        if user.ght == "OutsideNormalLimits":
+            user.criteria = 3
+            return user
         try:
-            psd = float(user.psd)
-            if ght == "OutsideNormalLimits" or psd < 5:
+            if float(user.psd_perc) < 5:
                 user.criteria = 3
-            else:
+            else: 
                 user.criteria = 2
         except:
-            print("Error: psd format corrupt")
+            print("Error: user criteria is unable to be determined due to faulty psd% format; Defaulting to criteria 2")
+            user.error = True
+            user.criteria = 2
         return user
 
     @staticmethod

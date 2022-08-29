@@ -14,6 +14,7 @@ class HVFAlgorithm:
         self.eye = eye
         self.criteria = criteria
 
+
     def run(self):
         """runs algorithm with given criteria
         Returns:
@@ -38,26 +39,26 @@ class HVFAlgorithm:
            tuple format: (ux,uy,lx,ly)
            index range: (0,9) 
         """
+        region_map_20_left = {  
+            "UL": (1, 2, 2, 4),
+            "LL": (1, 5, 2, 7),
+            "UM": (3, 2, 6, 3),  
+            "UC": (3, 3, 6, 4),
+            "LC": (3, 5, 6, 6),
+            "LM": (3, 6, 6, 8),
+            "UR": (7, 2, 9, 4),
+            "LR": (7, 5, 9, 7)
+        }
         region_map_20_right = {  
             "UL": (0, 2, 2, 4),  
             "LL": (0, 5, 2, 7),
-            "UM": (3, 2, 6, 3),  # asymmetric UM region as uy is 2 instead of 1
+            "UM": (3, 2, 6, 3),  
             "UC": (3, 3, 6, 4),
             "LC": (3, 5, 6, 6),
             "LM": (3, 6, 6, 8),
             "UR": (7, 2, 8, 4),
             "LR": (7, 5, 8, 7)
         }
-        region_map_20_left = {  
-            "UL": (1, 2, 2, 4),
-            "LL": (1, 5, 2, 7),
-            "UM": (2, 2, 5, 3),  # asymmetric UM region
-            "UC": (3, 3, 6, 4),
-            "LC": (3, 5, 6, 6),
-            "LM": (2, 6, 5, 8),
-            "UR": (7, 2, 9, 4),
-            "LR": (7, 5, 9, 7)
-}
         if self.eye == "Left":
             return region_map_20_left
         return region_map_20_right
