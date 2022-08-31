@@ -99,18 +99,21 @@ class ProcessData:
         """
         #if the GHT / PSD abnormal all 3 points at 5%, one point doesnt need to be at 1%) 
         try:
-            if user.ght == "OutsideNormalLimits":
+            # check for abnormal ght
+            if user.ght == "OutsideNormalLimits": 
                 user.criteria = 3
                 return user
         except Exception as e:
             print("Error: ght doesn't exist" + str(e))
+        
         try:
             if float(user.psd_perc) < 5:
                 user.criteria = 3
             else: 
                 user.criteria = 2
+                
         except:
-            print("Error: user criteria is unable to be determined due to faulty ght or psd % format; Defaulting to criteria 2")
+            print("Error: user criteria is unable to be determined due to faulty ght or psd % format; Defaulting to criteria 2 to check if cluster is present")
             user.error = True
             user.criteria = 2
         return user

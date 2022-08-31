@@ -35,7 +35,7 @@ class User:
         self.fixation_loss = "N/A"
         self.reliable = "N/A" # determined by false_pos and fixation_loss values
         self.field_size = "N/A"
-        self.algorithm_criteria = "N/A" # category 2 or 3 as specified
+        self.criteria = "N/A" # category 2 or 3 as specified
         
         
         self.error = False # unreliable due to error in extracting values

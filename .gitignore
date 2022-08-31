@@ -8,6 +8,11 @@ singleField/
 faultyFields/
 Trial_HVF/
 
+**/save.csv
+save.csv
+**/analysis.csv
+analysis.csv
+
 automated_hvf_grading.egg-info
 automated_hvf_grading/__pycache__
 build/*

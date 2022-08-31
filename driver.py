@@ -18,6 +18,18 @@ def filterByName(dfObject, patient_name):
     return dfObject.filterByName(patient_name)
 
 def Analysis(dfObject, eye):
+    """Important: filter dfObject by id or name
+    of individual patient as the whole idea of 
+    analysis is to run only on an individual 
+    patient scans
+
+    Args:
+        dfObject 
+        eye 
+
+    Returns:
+        analysis data frame
+    """
     if eye != "Left" and eye != "Right":
         print("Error: progression analysis not applicable, eye must be 'Left' or 'Right' only")
         return dfObject.df
@@ -46,10 +58,14 @@ def runAllJobs(absolute_directory_path):
     fileRunnerObj = FileRunner() 
     return fileRunnerObj.runParallel(absolute_directory_path)
 
+def saveDf(df):
+    # saves to current repository
+    df.to_csv('save.csv')
+
 # running driver.py script directly
 if __name__ == "__main__":
     # == demo data == 
-    path ='/Users/hughsignoriello/Desktop/Automated_Hvf_Grading/faultyFields'
+    # path ='/Users/hughsignoriello/Desktop/Automated_Hvf_Grading/faultyFields'
     path = '/Users/hughsignoriello/Desktop/Automated_Hvf_Grading/singleField'
     sample_size = 10
     patient_id = "0034527.9"

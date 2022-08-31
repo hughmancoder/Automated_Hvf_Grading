@@ -9,7 +9,7 @@ https://github.com/msaifee786/hvf_extraction_script
 ![image info](images/regions.png)
 
 ### changes
-
+***
 - rewrote entire repository from ground up!
 - improved error messages and error checking
 - all user bug fixes resolved (7/8 tested)
@@ -19,17 +19,20 @@ https://github.com/msaifee786/hvf_extraction_script
 - improved parallel processing takes full advantage of cpu: program can now process large file batches very quickly on multi-core cpu's
 
 ### features
+***
 - algorithm to automate reading hvf % pattern deviation field scans
 - data filtering such as sorting eye by left and right, patient name, chronological order
 - automating progression of glaucoma: we can chronologically map past outcomes and apply  progressor criteria (see below) to detect an onset
 - parallel processing: runParallel function allows us to run jobs simulatenously on multi-core computer saving time for huge file batches by using full cpu processing capabilities
 
+
 ### Run backend
 1. create conda environment (see developer notes below)
 2. run from driver.ipynb
 
-### Algorithmic Criteria
 
+### Algorithmic Criteria
+***
   An eye was deemed to have progressed if there was a new cluster of visual field defects that were reproduced in a consecutive field (but not necessarily the same visual field locations). A cluster of visual field defects was defined as 3 contiguous points abnormal in the pattern deviation probability plot at P < 5%, at least one of which is P< 1%. If the GHT was “Outside Normal Limits” or the global PSD was P < 5% on the two consecutive HVFs, then the individual points only needed to be abnormal on the pattern deviation probability plot at P < 5%. 
 
   In other words:
@@ -37,6 +40,7 @@ https://github.com/msaifee786/hvf_extraction_script
   category 2) A cluster of at least 3 contiguous points in the same region depressed at P < 5%, with at least one these < 1%
 
   category 3) A cluster of at least 3 contiguous points in the same region depressed at P < 5% AND (GHT = Outside Normal Limits OR PSD = P < 5%)
+
 
 ### Terminology
     abnormal: there is a defect in eye as given algorithmic criteria is satisfied
@@ -55,10 +59,13 @@ https://github.com/msaifee786/hvf_extraction_script
 
     Progression onset: date of the first recorded progression
 
+
 ### short hand terminology
+***
   matrix sub-regions: ul, ll, um, uc, lc, lm, ur, lr
   upper left, lower left, upper middle, upper central, lower central, lower middle, upper right, lower right
   final output listed as equivalent medical terms
+
 
 ### location labels
   __left eye__
@@ -81,18 +88,12 @@ https://github.com/msaifee786/hvf_extraction_script
   "UR": "Superior temporal wedge",
   "LR": "Inferior temporal wedge",
   
+
   ### left eye
  ![image info](images/lefteyeregions.png)
  
  ### right eye
  ![image info](images/righteyeregions.png)
-
- ### questions
- - what do we do if we cannot extract psd percentage? Reliability is determined if psd < 33% or ght outside limits so if we can't determine this criteria should we use 2 or 3 as deafult or just skip this scan and move on to the next one?
-
- - A progression is marked as 2/3 consecutive chronological defects in the same region
-
-- is Terminology listed above correct?
 
 ### To-do
 - [x] refactor code using OOP
@@ -142,28 +143,12 @@ https://stackoverflow.com/questions/21598872/how-to-create-multiple-class-object
 - [x] VFI extraction (VFI24-2 and VFI are varying formats)
 - [x] reliability = FNeg, FPos, FLoss all < 33 %
 - [x] Progression column: comment on what determined whether output if true or false
-- [ ] Progression analysis inconsistent (errors sometimes occur)
+- [x] Progression analysis inconsistent (errors sometimes occur)
 
-- [ ] Error: ght unable to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_GHT'
-- [ ] Error: metadata md % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_MDP'
+- [x] Error: ght unable to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_GHT'
+- [x] Error: metadata md % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_MDP'
 - [ ] Error: metadata psd % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_PSDP'
-- [ ] Error: user criteria is unable to be determined due to faulty psd % format;
 
-- [ ] Incorperate the following filter methods into the front end
-
-    def sortByTestDate(self, df):
-        return df.sort_values(by="test_date")
-
-    def filterByID(self,id):
-        return self.df[self.df["id"] == id]
-
-    def filterByName(self, Name):
-        return self.df[self.df["name"] == Name]
-        
-    def filterByFileFileName(self, filename): 
-        return self.df[self.df["filename"].str.contains(filename)]
-
-    def filterByEye(self, df, eye):
 
 ### GUI / Sonel
 __Note__: driver.ipynb shows the full integration of how I am running objects
@@ -176,6 +161,8 @@ __Note__: driver.ipynb shows the full integration of how I am running objects
 - [ ] integrate parallel joblib up to 7 jobs for parallel processor for 8 core cpu
 - [ ] filter by eye left and right integration
 
+- [ ] psd % readings extremely inconsistent -- improve readings
+
 Fix the following library aspects:
 Error: ght unable to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_GHT'
 Error: rx and/or vfi not extractable
@@ -183,6 +170,7 @@ Error: metadata md % not able to be extractedtype object 'Hvf_Object' has no att
 Error: metadata psd % not able to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_PSDP'
 
 ### notes / issues
+***
 __sample field attached to email___
 - [ ] the issue with errorSample is that the psd % cannot be properly read or ght.Therefore we cannot determine if criteria 3 is valid so I coded the algorithm to  default to criteria 2
 
@@ -203,6 +191,7 @@ To solve this problem, hemifield labels are converted with a map and will not be
 
 
 ### developer notes
+***
 to run library environment: 
 ```
 conda create --name automated-hvf-grading regex pillow fuzzywuzzy pandas python-levenshtein numpy joblib IPython
@@ -211,10 +200,37 @@ conda install -c conda-forge tesserocr poppler
 ```
 To install the modified hvf_extraction_library:
 ```
-// navigate to /hvf_extraction_script
+// navigate to /hvf_extraction_script (modified)
 pip install . (python setup.py develop)
 ```
-Tip : use conda install not pip install
+
+### Hugh's development environment for modified library
+```
+conda create --name ENV_NAME
+conda activate ENV_NAME
+
+conda install pip
+conda install -c conda-forge tesseract
+conda install -c conda-forge tesserocr poppler
+```
+cd to hvf_extraction script and run:
+```
+python setup.py develop
+```
+install other libraries:
+```
+pip install -r requirements.txt
+```
+
+### original library installation
+conda create --name ENV_NAME
+conda activate ENV_NAME
+
+conda install pip
+conda install -c conda-forge tesseract
+
+pip install hvf-extraction-script
+
 
 ### GUI demo
 ![image info](images/GUIGrading.png)
