@@ -50,23 +50,29 @@ class DataFrame:
         # outdated way
         self.df = self.df.append(vars(user), ignore_index = True)
         """
-
+    def remove_NA_Scans(self):
+        self.df.dropna()
+        self.df.drop(self.df[self.df["test_date"] == "N/A"].index, inplace=True)
+        
     # patient filtering methods
     def sortByTestDate(self, df):
+        self.remove_NA_Scans()
         return df.sort_values(by="test_date")
 
-    def sortByID(self,id):
-        return self.df[self.df["id"] == id]
+    def filterByID(self, id):
+        tempObj = self
+        tempObj.df[tempObj.df["id"] == id]
+        return tempObj
 
-    def sortByName(self, Name):
+    def filterByName(self, Name):
         return self.df[self.df["name"] == Name]
         
-    def sortByFilePath(self, path): 
-        return self.df[self.df["filename"].str.contains(path)]
+    def filterByFileFileName(self, filename): 
+        return self.df[self.df["filename"].str.contains(filename)]
 
-    def filterByEye(self, df, eye):
+    def filterByEye(self, eye):
         """takes in df and generates subdf with left or right eye
-            sorts chronologically by date
+            and sorts chronologically by date (needed for progression analysis)
             renames corresponding eye regions to medical terminologies for respective eye
 
         Args:
@@ -76,44 +82,60 @@ class DataFrame:
         Returns:
             sub dataframe
         """
-        tempdf =  self.sortByTestDate(df[df["eye"] == eye])
-        return self.renameHemifields(tempdf, eye)
-        
+        if eye != "Left" and eye != "Right":
+            print("Error: only valid eye labels accepted Left and Right")
+            return self.df
+        try:
+            self.remove_NA_Scans()
+        except Exception as e:
+            print("Error removing faulty dates and scans " + str(e))
+
+        return self.sortByTestDate(self.df[self.df["eye"] == eye])
 
     def renameHemifields(self, df, eye):
         rename = self.locationLabels(eye)
         return df.rename(columns = rename, inplace = False)
-
+        
     def locationLabels(self, eye):  
         if eye == "Left":
             return self.leftLabels
         return self.rightLabels
 
     # progressor criteria
-    def progressorCriteria(self, df, eye):
-        """takes in df and adds two new columns 
-            a boolean to determine whether there is a progression detected,
-            a date to determine the date of first progression onset
-            and the total time the progression has been present in patient
-        Args:
-            df (dataframe): updated dataframe
+    def progressorCriteria(self, eye):
+        """updates df with both progressor and confirmation field criteria
+
+        Args (eye): "Left" or "Right"
 
         Returns updated df
         """
-        p = df["is_abnormal"].values # progression 
-        number_of_samples = len(p) 
-        if number_of_samples <= 2:
-            print(f"Info: {number_of_samples} is not enough samples to evaluate progression criteria")
-            return df
+        
+        df = self.filterByEye(eye)
 
-        """
-        # testing if there is a onset of defects in any of the regions
-        for i in range(number_of_samples - 2):
-             if (p[i] and p[i + 1]) or (p[i] and p[i + 2]) or (p[i + 1] and p[i + 2]):
+        rows = df.shape[0]
+        if rows <= 2:
+            print(f"Info: {rows} samples is insufficient to evaluate progression criteria; issue could be wrong entry to filter patient")
+            return self.renameHemifields(df, eye)
+
+        df["progression"] = False
+        p = df["is_abnormal"].values
+        progression_index = -1
+        for i in range(rows - 2):
+            if (p[i] and p[i + 1]) or (p[i] and p[i + 2]) or (p[i + 1] and p[i + 2]):
                 progression = True
+                progression_index = i + 1
                 break
-        """
 
+        if progression_index > -1:
+            df["progression"].iloc[progression_index:] = True
+            df["progression_date"] = "-"
+            df["progression_date"].iloc[progression_index:] = df["test_date"].iloc[progression_index]
+            
+        else:
+            print("Info: no progression detected")
+            return self.renameHemifields(df, eye)        
+        
+        # == confirmation field algorithm == 
         # save index of first progression
         region_progressions = {
             "UL": -1,
@@ -129,46 +151,49 @@ class DataFrame:
         first_progression_date = "-"
         regions = df.loc[:, "UL" : "LR" :]
         v = regions.values.tolist()
-
-        # checking for any 2 abnormal scans out of 3 chronological scans
-        for r in range(len(v) - 2):
+        
+        # checking for any 2 abnormal scans out of 3 chronological scans in same region
+        for r in range(rows - 2):
             for c in range(8): 
                 if (v[r][c] and v[r + 1][c]):
-                    region = list(region_progressions.values())[c]
+                    region = list(region_progressions.keys())[c]
                     if(region_progressions[region] == -1): 
                         region_progressions[region] = r + 1
 
                 elif(v[r][c] and v[r + 2][c]):
-                    region = list(region_progressions.values())[c]
+                    region = list(region_progressions.keys())[c]
                     if(region_progressions[region] == -1): 
                         region_progressions[region] = r + 2
 
                 elif(v[r + 1][c] and v[r + 2][c]):
-                    region = list(region_progressions.values())[c]
+                    region = list(region_progressions.keys())[c]
                     if(region_progressions[region] == -1): 
                         region_progressions[region] = r + 2
+
+        progression_indexes = [i for i in region_progressions.values() if i != -1]
+        if not len(progression_indexes):
+            print("Info: No confirmation_fields found")
+            return self.renameHemifields(df, eye)
+
+        first_progression = min(progression_indexes)
+        print(first_progression)
+        df["confirmation_field"] = False
+        df["confirmation_field_regions"] = ""
+
+        if first_progression >= 0:
+            try:
+                df["confirmation_field"].iloc[first_progression:] = True
+                for key, val in region_progressions.items():
+                    if val >= 0:
+                        df["confirmation_field_regions"].iloc[val:] += " " + str(key)
+            except Exception as e:
+                print("Error: ", e)
+                return self.renameHemifields(df, eye)
+
+        return self.renameHemifields(df, eye)
+    
+
+            
                     
-            print(region_progressions)
-            # adding progression data to df
-            num_rows = len(df.index)
-            df["progression"] = False
-            df["progressive_regions"] = ""
-            df["progression_date"] = ""
-
-            first_progression = min(region_progressions.values()) # index of first progrssion
-
-            if first_progression >= 0:
-                try:
-                    df["progression"].iloc[first_progression:] = True
-                    df["progresson_date"].iloc[first_progression:] = df["test_date"].iloc[first_progression]
-                    for key, val in region_progressions.items():
-                        print(key, val)
-                        if val != -1:
-                            df["progressive_regions"].iloc[val:] = " " + str(key)
-                except Exception as e:
-                    print("Error: ", e)
-                    df["progression"].iloc[first_progression:] = True
-                    return df
-
-            return df
+            
                         

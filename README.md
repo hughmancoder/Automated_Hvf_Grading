@@ -30,6 +30,10 @@ https://github.com/msaifee786/hvf_extraction_script
 
 ### Algorithmic Criteria
 
+  An eye was deemed to have progressed if there was a new cluster of visual field defects that were reproduced in a consecutive field (but not necessarily the same visual field locations). A cluster of visual field defects was defined as 3 contiguous points abnormal in the pattern deviation probability plot at P < 5%, at least one of which is P< 1%. If the GHT was “Outside Normal Limits” or the global PSD was P < 5% on the two consecutive HVFs, then the individual points only needed to be abnormal on the pattern deviation probability plot at P < 5%. 
+
+  In other words:
+
   category 2) A cluster of at least 3 contiguous points in the same region depressed at P < 5%, with at least one these < 1%
 
   category 3) A cluster of at least 3 contiguous points in the same region depressed at P < 5% AND (GHT = Outside Normal Limits OR PSD = P < 5%)
@@ -41,7 +45,9 @@ https://github.com/msaifee786/hvf_extraction_script
 
     error: this is a flag to mark that there may be an error present in result due to not being able to extract every feature consequently leading to unreliable dependencies
 
-    progression: a chronological progression of abnormal eye scans in teh same region 
+    confirmation field: "2/3 consecutive chronological defects in the same region" 
+
+    Progrssion in eye was deemed to have progressed if there was a new cluster of visual field defects that were reproduced in a consecutive field (but not necessarily the same visual field locations). A cluster of visual field defects was defined as 3 contiguous points abnormal in the pattern deviation probability plot at P < 5%, at least one of which is P< 1%. If the GHT was “Outside Normal Limits” or the global PSD was P < 5% on the two consecutive HVFs, then the individual points only needed to be abnormal on the pattern deviation probability plot at P < 5%. 
 
     progressor criteria: any 2 defective scans out of 3 consecutive chronological samples
 
@@ -111,8 +117,21 @@ https://github.com/msaifee786/hvf_extraction_script
 - [x] work on creating a new object for each user object file run as objects previous values get carried across
 https://stackoverflow.com/questions/21598872/how-to-create-multiple-class-objects-with-a-loop-in-python
 - [x] create driver functions for both concurrent and parallel jobs (8 cores) in driver.py
-- [ ] parallel environment working
-- [ ] progression functionality seperated
+- [x] parallel environment working
+- [x] progression functionality seperated
+
+- [x] filter out N/A on dfs
+- [x] add filtering to progressor criteria
+
+- [x] change progressor criteria to take in object
+- [x] all functions return progObject
+
+- [x] recheck criteria according to email in processData
+
+- [ ] grade trial folder and send results to Nia
+
+### Extensions
+- [ ] get working for 32-2 pdfs
 
 ### intial bug fixes based on user requirements
 - [x] MD% and PSD% in the criteria for abnormal (criteria 3) [Fix psd < 5%]
@@ -130,6 +149,21 @@ https://stackoverflow.com/questions/21598872/how-to-create-multiple-class-object
 - [ ] Error: metadata psd % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_PSDP'
 - [ ] Error: user criteria is unable to be determined due to faulty psd % format;
 
+- [ ] Incorperate the following filter methods into the front end
+
+    def sortByTestDate(self, df):
+        return df.sort_values(by="test_date")
+
+    def filterByID(self,id):
+        return self.df[self.df["id"] == id]
+
+    def filterByName(self, Name):
+        return self.df[self.df["name"] == Name]
+        
+    def filterByFileFileName(self, filename): 
+        return self.df[self.df["filename"].str.contains(filename)]
+
+    def filterByEye(self, df, eye):
 
 ### GUI / Sonel
 __Note__: driver.ipynb shows the full integration of how I am running objects
@@ -168,15 +202,17 @@ To solve this problem, hemifield labels are converted with a map and will not be
 - [x] ght is commonly unable to be extracted, the extraction mechanism/code should be looked into in more detail
 
 
-
 ### developer notes
 to run library environment: 
 ```
-conda create --name automated-hvf-grading
+conda create --name automated-hvf-grading regex pillow fuzzywuzzy pandas python-levenshtein numpy joblib IPython
 conda activate automated-hvf-grading
-conda install pip
-conda install -c conda-forge tesseract
-pip install hvf-extraction-script
+conda install -c conda-forge tesserocr poppler
+```
+To install the modified hvf_extraction_library:
+```
+// navigate to /hvf_extraction_library
+pip install .
 ```
 ### GUI demo
 ![image info](images/GUIGrading.png)

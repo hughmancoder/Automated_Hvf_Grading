@@ -1,14 +1,19 @@
-singleField/
-**/singleField/
+
 **/DS_Store
 DS_Store
+
+# sensitive data 
+singleField/
+**/singleField/
 faultyFields/
-automated_hvf_grading.egg-info/*
+Trial_HVF/
+
+automated_hvf_grading.egg-info
 automated_hvf_grading/__pycache__
 build/*
 dist/*
 
-hvf_extraction_script/hvf_extraction_script.egg-info/*
+hvf_extraction_script/hvf_extraction_script.egg-info
 hvf_extraction_script/build
 hvf_extraction_script/dist
 .vscode/launch.json

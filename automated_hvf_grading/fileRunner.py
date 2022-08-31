@@ -153,7 +153,7 @@ class FileRunner:
 
         print(f"Info: running jobs in parallel on 2 logical cores")
 
-        user_objects = Parallel(n_jobs=-2)(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
+        user_objects = Parallel(n_jobs = -2)(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
     
         # update data frame
         for userObj in user_objects:
@@ -185,8 +185,8 @@ class FileRunner:
         user_objects = [User() for i in range(len(path_array))]
         dataFrameObj = DataFrame(user_objects[0])
 
-        # passes by reference
-        Parallel(n_jobs=-n_logical_cores)(delayed(self.runFile)(file_path, user_objects[i])for i, file_path in enumerate(path_array))
+        # passes by reference: negative prefix needed
+        Parallel(n_jobs = -n_logical_cores)(delayed(self.runFile)(file_path, user_objects[i])for i, file_path in enumerate(path_array))
 
         for userObj in user_objects:
             dataFrameObj.addData(userObj)

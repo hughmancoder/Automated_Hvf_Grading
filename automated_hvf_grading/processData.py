@@ -87,11 +87,17 @@ class ProcessData:
     @staticmethod
     def DetermineCriteria(user): 
         """Determines algorithmic criteria
-           Criteria 3: a cluster of 3 contiguous points all depressed at p < 5% 
-           AND (GHT abnormal or PSD < 5%)
+        Criteria 3: a cluster of 3 contiguous points all depressed at p < 5% 
+        AND (GHT abnormal or PSD < 5%)
+
+
+        A cluster of visual field defects was defined as 3 contiguous points abnormal in the pattern deviation probability plot at P < 5%, 
+        at least one of which is P< 1%. If the GHT was “Outside Normal Limits” or the global PSD was P < 5% on the two consecutive HVFs, 
+        then the individual points only needed to be abnormal on the pattern deviation probability plot at P < 5%. 
         Args:
-           user (object)
+        user (object)
         """
+        #if the GHT / PSD abnormal all 3 points at 5%, one point doesnt need to be at 1%) 
         try:
             if user.ght == "OutsideNormalLimits":
                 user.criteria = 3
@@ -114,10 +120,10 @@ class ProcessData:
         """ensures only pdfs are read
 
         Args:
-            List (_type_): _description_
+        List (_type_): _description_
 
         Returns:
-            list: only .pdf files
+        list: only .pdf files
         """
         for f in List:
             if f.endswith(".png"):
