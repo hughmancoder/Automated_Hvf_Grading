@@ -2,16 +2,31 @@
 humphrey visual field matrix reading, grading and analysis automated via python script for research at Flinders University
 
 ### supporting library:
+__hvf_extraction_script__
 https://github.com/msaifee786/hvf_extraction_script
 
 ### Regions 
 ![image info](images/regions.png)
 
+### changes
+
+- rewrote entire repository from ground up!
+- improved error messages and error checking
+- all user bug fixes resolved (7/8 tested)
+- more reliable extraction
+- more extraction features
+- many more features
+- improved parallel processing takes full advantage of cpu: program can now process large file batches very quickly on multi-core cpu's
 
 ### features
 - algorithm to automate reading hvf % pattern deviation field scans
 - data filtering such as sorting eye by left and right, patient name, chronological order
 - automating progression of glaucoma: we can chronologically map past outcomes and apply  progressor criteria (see below) to detect an onset
+- parallel processing: runParallel function allows us to run jobs simulatenously on multi-core computer saving time for huge file batches by using full cpu processing capabilities
+
+### Run backend
+1. create conda environment (see developer notes below)
+2. run from driver.ipynb
 
 ### Algorithmic Criteria
 
@@ -75,13 +90,15 @@ https://github.com/msaifee786/hvf_extraction_script
 
 ### To-do
 - [x] refactor code using OOP
-- [x] refactor into a module
+- [x] refactor into a modules
+
 - [x] get driver.py to run
 - [x] fix criteria in algorithm (< 5 % not 0.5 %) 
 - [x] get extraction to work
 - [x] refactor: remove temp_dictionary and use patientData class
 - [x] refactor: make dataFrame class and have dataFrame methods 
 - [x] refactor analyseData, build dataFrame into DataFrame class
+
 - [x] create subdf for specific patient
 - [x] work on creating sub_dfs for left and right eye
 - [x] add medical terms to sub_df title
@@ -90,10 +107,12 @@ https://github.com/msaifee786/hvf_extraction_script
 - [x] add date of first progression to column
 - [x] fix two differnt vfi labels through pattern matching
 
-- [ ] work on creating a new object for each user object file run as objects previous values get carried across
+- [x] processed files changed to file runner
+- [x] work on creating a new object for each user object file run as objects previous values get carried across
 https://stackoverflow.com/questions/21598872/how-to-create-multiple-class-objects-with-a-loop-in-python
-- [ ] create driver functions for both concurrent and parallel jobs (8 cores)
-
+- [x] create driver functions for both concurrent and parallel jobs (8 cores) in driver.py
+- [ ] parallel environment working
+- [ ] progression functionality seperated
 
 ### intial bug fixes based on user requirements
 - [x] MD% and PSD% in the criteria for abnormal (criteria 3) [Fix psd < 5%]
@@ -101,10 +120,15 @@ https://stackoverflow.com/questions/21598872/how-to-create-multiple-class-object
 - [x] location labels mixed up (nasal step labeled as temporal wedge) 
 - [x] more specific and reliable error messages
 - [x] extraction failure labels (unable to extract -> more specific label: 'too severe to analyse')
-- [ ] VFI extraction (VFI24-2 and VFI are varying formats)
+- [x] VFI extraction (VFI24-2 and VFI are varying formats)
 - [x] reliability = FNeg, FPos, FLoss all < 33 %
 - [x] Progression column: comment on what determined whether output if true or false
 - [ ] Progression analysis inconsistent (errors sometimes occur)
+
+- [ ] Error: ght unable to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_GHT'
+- [ ] Error: metadata md % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_MDP'
+- [ ] Error: metadata psd % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_PSDP'
+- [ ] Error: user criteria is unable to be determined due to faulty psd % format;
 
 
 ### GUI / Sonel
@@ -116,6 +140,7 @@ __Note__: driver.ipynb shows the full integration of how I am running objects
 - [x] implement a more intuitive drop down filter for right and left eye
 - [ ] absolutely all user object variables displayed on GUI output
 - [ ] integrate parallel joblib up to 7 jobs for parallel processor for 8 core cpu
+- [ ] filter by eye left and right integration
 
 Fix the following library aspects:
 Error: ght unable to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_GHT'

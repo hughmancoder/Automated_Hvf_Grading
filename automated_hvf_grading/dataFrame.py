@@ -1,15 +1,17 @@
 import pandas as pd
+from automated_hvf_grading.user import User
 
 class DataFrame:
 
     def __init__(self, user):
         """creates a dataframe from user object
+            soft coded from object attributes and values so that when we make changes to the object (such as adding new features), it automatically shows up on dataframe
 
         Args:
             user (object)
         """
-        # hard coded as we wan't to exclude some data to not clutter dataframe
-        self.column_names = self.getObjectColumns(user)
+        print("Info: creating new dataframe")
+        self.column_names = user.getAttributes()
         self.df = pd.DataFrame(columns = self.column_names)
         self.leftLabels = {
             "UL": "Superior temporal wedge",
@@ -32,14 +34,16 @@ class DataFrame:
             "LR": "Inferior temporal wedge",
         }
     
-    def getObjectColumns(self, user):
-        return list(vars(user).keys())
+    def runDataFrame(self):
+        pass;
 
-    def getObjectValues(self, user):
-        return list(vars(user).values())
+    @staticmethod
+    def listToDictionary(l1, l2):
+        return dict(zip(l1, l2))
 
-    def addData(self, user): 
-        temp = pd.DataFrame([vars(user)])
+    def addData(self, userObj): 
+        # temp = pd.DataFrame(userObj.getDict())
+        temp = pd.DataFrame([vars(userObj)])
         self.df = pd.concat([self.df, temp], ignore_index=True)
     
         """
@@ -72,7 +76,9 @@ class DataFrame:
         Returns:
             sub dataframe
         """
-        return self.sortByTestDate(df[df["eye"] == eye])
+        tempdf =  self.sortByTestDate(df[df["eye"] == eye])
+        return self.renameHemifields(tempdf, eye)
+        
 
     def renameHemifields(self, df, eye):
         rename = self.locationLabels(eye)
@@ -88,7 +94,7 @@ class DataFrame:
         """takes in df and adds two new columns 
             a boolean to determine whether there is a progression detected,
             a date to determine the date of first progression onset
-            and the total time the progrssion has been present in patient
+            and the total time the progression has been present in patient
         Args:
             df (dataframe): updated dataframe
 
@@ -162,7 +168,7 @@ class DataFrame:
                 except Exception as e:
                     print("Error: ", e)
                     df["progression"].iloc[first_progression:] = True
-                    self.renameHemifields(df, eye)
+                    return df
 
-            return self.renameHemifields(df, eye)
+            return df
                         
