@@ -211,9 +211,11 @@ conda install -c conda-forge tesserocr poppler
 ```
 To install the modified hvf_extraction_library:
 ```
-// navigate to /hvf_extraction_library
-pip install .
+// navigate to /hvf_extraction_script
+pip install . (python setup.py develop)
 ```
+Tip : use conda install not pip install
+
 ### GUI demo
 ![image info](images/GUIGrading.png)
 **select python interpreter: automated-hvf-grading**
