@@ -1,4 +1,6 @@
 # used to store patient data during extraction
+
+import numpy as np
 class User:
     def __init__(self):
         self.resetValues()
@@ -22,9 +24,9 @@ class User:
         "md_db": "MD dB",
         "psd_perc": "PSD %",
         "psd_db": "PSD dB",
-        "false_pos": "False Pos %",
-        "false_neg": "False Neg %",
-        "fixation_loss": "Fixation Loss %",
+        "false_pos_perc": "False Pos %",
+        "false_neg_perc": "False Neg %",
+        "fixation_loss_perc": "Fixation Loss %",
         "reliable": "Reliable",
         "field_size": "Field Size",
         "criteria": "Criteria",
@@ -58,10 +60,10 @@ class User:
         self.psd_perc = "N/A"
         self.psd_db = "N/A"
 
-        self.false_pos = "N/A"
-        self.false_neg = "N/A"
+        self.false_pos_perc = "N/A"
+        self.false_neg_perc = "N/A"
 
-        self.fixation_loss = "N/A"
+        self.fixation_loss_perc = "N/A"
         self.reliable = "N/A" # determined by false_pos and fixation_loss values
         self.field_size = "N/A"
         self.criteria = "N/A" # category 2 or 3 as specified
@@ -89,6 +91,12 @@ class User:
 
     def getAttributes(self):
         return list(self.__dict__.keys())
+    
+    def getAttributesHuman(self):
+        # return list(self.attributeToHumanReadableDict[header] for header in self.__dict__.keys())
+        sort_idx = np.argsort(self.attributeToHumanReadableDict.keys())
+        idx = np.searchsorted(self.attributeToHumanReadableDict.keys(),self.__dict__.keys(),sorter = sort_idx)
+        return np.asarray(self.attributeToHumanReadableDict.values())[sort_idx][idx].tolist()
 
     def getValues(self):
         return list(self.__dict__.values())

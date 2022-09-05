@@ -6,6 +6,8 @@ from hvf_extraction_script.utilities.file_utils import File_Utils
 from automated_hvf_grading.processData import ProcessData
 import numpy as np
 
+from automated_hvf_grading.user import User
+
 class ExtractHVFData:
     def __init__(self):
         pass
@@ -76,7 +78,7 @@ class ExtractHVFData:
         
         return user
         
-    def extractMetadata(self, user, hvf_obj):
+    def extractMetadata(self, user: User, hvf_obj):
         """updates user meta data in user object from hvf object
 
         Args:
@@ -155,8 +157,8 @@ class ExtractHVFData:
             print("Error: metadata psd % not able to be extracted " + str(e))
 
         try:
-            user.false_neg = int(hvf_obj.metadata[Hvf_Object.KEYLABEL_FALSE_NEG].rstrip("%"))
-            user.false_pos = int(hvf_obj.metadata[Hvf_Object.KEYLABEL_FALSE_POS].rstrip("%"))
+            user.false_neg_perc = int(hvf_obj.metadata[Hvf_Object.KEYLABEL_FALSE_NEG].rstrip("%"))
+            user.false_pos_perc = int(hvf_obj.metadata[Hvf_Object.KEYLABEL_FALSE_POS].rstrip("%"))
             numerator, denominator = hvf_obj.metadata[Hvf_Object.KEYLABEL_FIXATION_LOSS].split("/")
             user.fixation_loss = round((int(numerator) / int(denominator)) * 100, 2)  # convert to %
         except Exception as e:
@@ -172,7 +174,7 @@ class ExtractHVFData:
         """
 
         # check if statistical values are reliable
-        user.reliable = self.checkReliability(user.false_pos, user.fixation_loss, user.false_neg)
+        user.reliable = self.checkReliability(user.false_pos_perc, user.fixation_loss, user.false_neg_perc)
         return user
 
     @staticmethod
