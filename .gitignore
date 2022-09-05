@@ -1,6 +1,9 @@
 
 **/.DS_Store
 .DS_Store
+__pycache__
+dist
+build
 
 # sensitive data 
 singleField/
@@ -15,8 +18,6 @@ analysis.csv
 
 automated_hvf_grading.egg-info
 automated_hvf_grading/__pycache__
-build/*
-dist/*
 
 hvf_extraction_script/hvf_extraction_script.egg-info
 hvf_extraction_script/build

@@ -13,8 +13,6 @@ import cv2
 from shutil import copyfile
 import pydicom
 from pdf2image import convert_from_path
-from io import BytesIO
-from PIL import Image
 import numpy
 
 class File_Utils:
@@ -87,8 +85,8 @@ class File_Utils:
     # Given file path, reads cv2 image from file
     @staticmethod
     def read_image_from_pdf(file_path):
+        # pdf = convert_from_path(file_path, single_file=True, poppler_path="C:\\Users\\sonel\\Documents\\GitHub\\Automated_Hvf_Grading\\electron-frontend\\src\\poppler\\Library\\bin") # when packed
         pdf = convert_from_path(file_path, single_file=True)
-        #pdf = convert_from_path(file_path, single_file=True, poppler_path="./src/poppler-0.68.0/bin")
         cv_image = numpy.array(pdf[0]) 
         return cv_image[:, :, ::-1]
 

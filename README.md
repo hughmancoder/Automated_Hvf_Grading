@@ -193,25 +193,30 @@ To solve this problem, hemifield labels are converted with a map and will not be
 ### developer notes
 ***
 to run library environment: 
-```
-conda create --name automated-hvf-grading regex pillow fuzzywuzzy pandas python-levenshtein numpy joblib IPython
-conda activate automated-hvf-grading
+Install either Conda or Miniconda and run the following commands
+```bash
+conda create --name ENV_NAME regex pillow fuzzywuzzy pandas python-levenshtein numpy joblib IPython pdf2image
+conda activate ENV_NAME
 conda install -c conda-forge tesserocr poppler
+pip install -r requirements.txt
 ```
 To install the modified hvf_extraction_library:
-```
-// navigate to /hvf_extraction_script (modified)
-pip install . (python setup.py develop)
+```bash
+# navigate to /hvf_extraction_script (modified)
+pip install . (OR python setup.py install / develop)
 ```
 
+Packing env for use in front end:
+```bash
+conda pack -n ENV_NAME -o env.zip
+```
 ### Hugh's development environment for modified library
 ```
 conda create --name ENV_NAME
 conda activate ENV_NAME
 
 conda install pip
-conda install -c conda-forge tesseract
-conda install -c conda-forge tesserocr poppler
+conda install -c conda-forge tesseract tesserocr poppler
 ```
 cd to hvf_extraction script and run:
 ```
@@ -221,15 +226,6 @@ install other libraries:
 ```
 pip install -r requirements.txt
 ```
-
-### original library installation
-conda create --name ENV_NAME
-conda activate ENV_NAME
-
-conda install pip
-conda install -c conda-forge tesseract
-
-pip install hvf-extraction-script
 
 
 ### GUI demo

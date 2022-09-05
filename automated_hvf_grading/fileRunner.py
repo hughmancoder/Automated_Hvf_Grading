@@ -1,14 +1,13 @@
 # == imports == 
+from ctypes import Array
+import os
+from joblib import Parallel, delayed
+import joblib.parallel
 import math
 import time
-import importlib
-import os
-from xml.etree.ElementInclude import LimitedRecursiveIncludeError
-from joblib import Parallel, delayed
-from multiprocessing import cpu_count # used to asses number of cpu cores
 
 # == dependencies == 
-from automated_hvf_grading.extractHVFData import ExtractHVFData
+from automated_hvf_grading.extractHVFdata import ExtractHVFData
 from automated_hvf_grading.processData import ProcessData
 from automated_hvf_grading.hvfAlgorithm import HVFAlgorithm
 from automated_hvf_grading.user import User
@@ -47,7 +46,7 @@ class FileRunner:
         return path_array        
 
     def runFile(self, file_path, user):
-        """driver to the program, runs a single sample and calls functions
+        """driver to the program, runs a single file and calls functions
 
         Args:
             file_path (path string)
@@ -96,64 +95,59 @@ class FileRunner:
         user.is_abnormal = is_abnormal
 
         return user
-
-    def runConcurrent(self, absolute_directory_path, sample_size = False):
-        """runs jobs in path array one at a time 
-            returns extracted dataFrame object with processed Files
+    
+    def runCustomParallel(self, path_array: Array, n_jobs: int, sample_size = False):
+        """Runs files in path array using provided n_jobs
 
         Args:
-            absolute_directory_path (string): folder file path containing hvf samples
-            sample_size (optional parameter)
+            path_array (_type_): array of file paths
+            n_jobs (_type_): Joblib n_jobs parameter
+            sample_size (bool, optional): Sample of files to process. Defaults to False.
 
         Returns:
-            dataFrame object
+            _type_: dataFrame object
         """
-        # extract file paths 
-        path_array = FileRunner.getPathArray(absolute_directory_path)
-
-        # generate sample size
-        if sample_size != False:
-            path_array = FileRunner.getSamplesFromPathArray(path_array, sample_size)
-
-        if len(path_array) <= 0:
-            print("Info: no files to read")
-            return None
-
-        print("sampled array: ", path_array)
-
-        # create objects 
-        userObj = User()
-        dataFrameObj = DataFrame(userObj)
         
-
-        for file_path in path_array:
-            userObj.resetValues() # reset object attributes rather than creating a new object
-            userObj = self.runFile(file_path, userObj)
-            dataFrameObj.addData(userObj)
-
-        return dataFrameObj
-
-    def runTwoJobsParallel(self, absolute_directory_path, sample_size = False):
-        """runs two jobs in parallel
-
-        Returns:
-            DataFrame object
-        """
-        path_array = FileRunner.getPathArray(absolute_directory_path)
-
         if sample_size != False:
             path_array = FileRunner.getSamplesFromPathArray(path_array, sample_size)
-
+        
         if len(path_array) <= 0:
             print("Info: no files to read")
             return None
+        
+        total_n_jobs = len(path_array)
+        
+        class BatchCompletionCallBack(object):
+            def __init__(self, dispatch_timestamp, batch_size, parallel):
+                self.dispatch_timestamp = dispatch_timestamp
+                self.batch_size = batch_size
+                self.parallel = parallel
+
+            def __call__(self, out):
+                self.parallel.n_completed_tasks += self.batch_size
+                this_batch_duration = time.time() - self.dispatch_timestamp
+
+                self.parallel._backend.batch_completed(self.batch_size,
+                                                this_batch_duration)
+                self.parallel.print_progress()
+                # Added code - start
+                progress = math.trunc((self.parallel.n_completed_tasks / total_n_jobs) * 100)
+                print("Progress: {}".format(progress))
+
+                time_remaining = math.trunc((this_batch_duration / self.batch_size) * (total_n_jobs - self.parallel.n_completed_tasks))
+                print( "ETA: {}s".format(time_remaining/60))
+                # Added code - end
+                if self.parallel._original_iterator is not None:
+                    self.parallel.dispatch_next()
+                    
+        joblib.parallel.BatchCompletionCallBack = BatchCompletionCallBack
 
         user_objects = [User() for i in range(len(path_array))]
         dataFrameObj = DataFrame(user_objects[0])
 
-        print(f"Info: running jobs in parallel on 2 logical cores")
+        print(f"Info: running jobs using {n_jobs} n_jobs")
 
-        user_objects = Parallel(n_jobs = -2)(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
+        user_objects = Parallel(n_jobs = n_jobs , prefer="threads")(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
     
         # update data frame
         for userObj in user_objects:
@@ -161,35 +155,3 @@ class FileRunner:
 
         return dataFrameObj
 
-    def runParallel(self, absolute_directory_path, sample_size = False):
-        """runs as many jobs simultaneously as system will allow by counting the number of cpu cores
-        Args:
-            absolute_directory_path
-            sample_size (bool, optional): generate sub array of sample_size
-
-        Returns: DataFrame object
-        """
-
-        path_array = FileRunner.getPathArray(absolute_directory_path)
-
-        if sample_size != False:
-            path_array = FileRunner.getSamplesFromPathArray(path_array, sample_size)
-
-        if len(path_array) <= 0:
-            print("Info: no files to read")
-            return None
-
-        n_logical_cores = cpu_count() # get the number of logical cpu cores on computer
-        print(f"Info: running jobs in parallel on {n_logical_cores} logical cores")
-
-        user_objects = [User() for i in range(len(path_array))]
-        dataFrameObj = DataFrame(user_objects[0])
-
-        # passes by reference: negative prefix needed
-        Parallel(n_jobs = -n_logical_cores)(delayed(self.runFile)(file_path, user_objects[i])for i, file_path in enumerate(path_array))
-
-        for userObj in user_objects:
-            dataFrameObj.addData(userObj)
-
-        return dataFrameObj
-        

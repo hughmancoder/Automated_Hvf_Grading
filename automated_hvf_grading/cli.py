@@ -1,22 +1,16 @@
-from joblib import Parallel, delayed
 import argparse
 import pandas as pd
+from automated_hvf_grading import driver
 
 parser = argparse.ArgumentParser(description='HVF Progression')
 parser.add_argument("--group", "-g", type=int, help="Group Method; 0 = By Patient ID, 1 = Seperate Folders", default=0, choices=[0, 1])
 parser.add_argument("--progression", "-p", help='Progression analysis method to use; 0 = Default', type=int, choices=[0])
 parser.add_argument("--csvpath", "-c", help='Path to CSV', type=str)
 parser.add_argument("--json", "-j", help='JSON String', type=str)
-parser.add_argument("--files", "-f", help='Path to each file as a different argument', nargs='+', default=[])
+parser.add_argument("--files", "-f", help='Path to each file as a different argument')
 args = parser.parse_args()
 if args.files:
-    files = args.files
-    total_n_jobs = len(files);
-    data = Parallel(n_jobs=-2)(delayed(RunFiles)(i) for i in files)
-    title = ["Filename", "Name", "DOB", "ID", "Eye", "Size", "Date","RX","GHT","VFI","MD %", "MD dB", "PSD %","PSD dB","FalsePOS",
-         "Fixation Loss", "Reliable", "Superior temporal wedge", "Inferior temporal wedge", "Superior Bjerrum","Superior paracentral",
-         "Inferior paracentral", "Inferior Bjerrum", "Superior nasal step", "Inferior nasal step", "Criteria","Is Abnormal?"]; 
-    df = pd.DataFrame(data, columns=title)
+    df = driver.runParallel(args.files.split()).df
     pd.set_option("display.max_rows", None, "display.max_columns", None) #setting to show full df
     htmloutput = df.to_html(border=0, table_id="grading-table", classes=["table","table-striped","table-hover"], index=False, justify="left").replace('\n', ' ').replace('\r', '')
     jsonoutput = df.to_json(index=False, orient="table")
@@ -29,7 +23,7 @@ elif args.progression is not None:
     elif args.json:
         df = pd.read_json(args.json, orient="table")
     if args.progression == 0:
-        ids = [];
+        ids = []
         if args.group == 0:
             ids = df.ID.unique()
             ids = ids[ids != "Error"] # TODO: check if Errors need to be included
@@ -38,7 +32,7 @@ elif args.progression is not None:
             print("Error: Group method not implemented")
 
         total_n_jobs = len(ids);
-        sliced_dfs = Parallel(n_jobs=-2, prefer="threads")(delayed(AnalyseFiles)(i, df) for i in ids)
+        # sliced_dfs = Parallel(n_jobs=-2, prefer="threads")(delayed(AnalyseFiles)(i, df) for i in ids)
 
         outdf = pd.concat(sliced_dfs, ignore_index=True)
         htmloutput = outdf.to_html(border=0, table_id="analysis-table", classes=["table","table-striped","table-hover", "fade"], index=False, justify="left").replace('\n', ' ').replace('\r', '')

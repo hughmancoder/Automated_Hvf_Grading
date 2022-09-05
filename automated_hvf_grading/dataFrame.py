@@ -35,7 +35,11 @@ class DataFrame:
         }
     
     def runDataFrame(self):
-        pass;
+        pass
+    
+    def getHumanDf(self):
+        # self.df.columns = self.df.columns.str.replace("_", " ")
+        return self.df
 
     @staticmethod
     def listToDictionary(l1, l2):

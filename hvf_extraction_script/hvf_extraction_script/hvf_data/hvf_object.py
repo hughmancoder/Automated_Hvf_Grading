@@ -1342,7 +1342,7 @@ class Hvf_Object:
 
 		# ===== MD/PSD/VFI DETECTION =====
 
-		print(tokenized_dev_val_list)
+		# print(tokenized_dev_val_list)
 
 		# if (layout_version == Hvf_Object.HVF_LAYOUT_V1) or (layout_version == Hvf_Object.HVF_LAYOUT_V2) or (layout_version == Hvf_Object.HVF_LAYOUT_V2_GPA):
 		# 	#field, tokenized_dev_val_list = Regex_Utils.fuzzy_regex_middle_field('MD dB', 'MD\s*(.*)dB{e<=2}', tokenized_dev_val_list);
@@ -1384,7 +1384,7 @@ class Hvf_Object:
 		# 	field, tokenized_dev_val_list = Regex_Utils.fuzzy_regex_middle_field(label, regex_string, tokenized_dev_val_list);
 
 		label = 'MD';
-		regex_string = 'MD(?:'+field_size+')?:.*P\s*<\s*(\d*)\s*%{e<=2}';
+		regex_string = 'MD(?:'+field_size+')?:.*P\s*<\s*(\S*)\s*%{e<=2}';
 		field, tokenized_dev_val_list = Regex_Utils.fuzzy_regex_middle_field(label, regex_string, tokenized_dev_val_list);
 
 		#field = Regex_Utils.clean_punctuation_to_period(field);
@@ -1431,7 +1431,7 @@ class Hvf_Object:
 		# 	field, tokenized_dev_val_list = Regex_Utils.fuzzy_regex_middle_field(label, regex_string, tokenized_dev_val_list);
 
 		label = 'PSD'
-		regex_string = 'PSD(?:'+field_size+')?:.*P\s*<\s*(\d*)\s*%{e<=2}';
+		regex_string = 'PSD(?:'+field_size+')?:.*P\s*<\s*(\S*)\s*%{e<=2}';
 		field, tokenized_dev_val_list = Regex_Utils.fuzzy_regex_middle_field(label, regex_string, tokenized_dev_val_list);
 		#field = Regex_Utils.clean_punctuation_to_period(field);
 		field = Regex_Utils.remove_spaces(field);

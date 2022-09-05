@@ -2,6 +2,35 @@
 class User:
     def __init__(self):
         self.resetValues()
+        
+    attributeToHumanReadableDict = {
+        "filename": "Filename",
+        "name": "Name",
+        "dob": "DOB",
+        "id": "ID",
+        "eye": "Eye",
+        "test_date": "Test Date",
+        "pattern_deviation_matrix": "Pattern Deviation Matrix",
+        "strategy": "Strategy",
+        "fovea": "Fovea",
+        "layout_version": "Layout Version",
+        "rx": "Rx",
+        "vfi_24_2": "VFI 24-2",
+        "vfi": "VFI",
+        "ght": "GHT",
+        "md_perc": "MD %",
+        "md_db": "MD dB",
+        "psd_perc": "PSD %",
+        "psd_db": "PSD dB",
+        "false_pos": "False Pos %",
+        "false_neg": "False Neg %",
+        "fixation_loss": "Fixation Loss %",
+        "reliable": "Reliable",
+        "field_size": "Field Size",
+        "criteria": "Criteria",
+        "error": "Error",
+        "is_abnormal": "Is Abnormal?",
+    }
 
     def resetValues(self):
         self.filename = "N/A"

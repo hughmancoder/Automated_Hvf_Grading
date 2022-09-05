@@ -88,8 +88,7 @@ typings/
 # Electron-Forge
 out/
 
-
-# custom
-
-src/pythonvenv/
-src/pythonvenvold/
+# Custom
+src/env/
+src/poppler/
+src/poppler-old/

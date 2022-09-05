@@ -1,26 +1,14 @@
 # == hvf library imports
-from random import sample
-from hvf_extraction_script.hvf_manager.hvf_export import Hvf_Export
 from hvf_extraction_script.hvf_data.hvf_object import Hvf_Object
 from hvf_extraction_script.utilities.file_utils import File_Utils
 
 # import User
 from automated_hvf_grading.processData import ProcessData
-from pdf2image import convert_from_path
-import os
-import cv2
-import pathlib  # pathy
 import numpy as np
 
 class ExtractHVFData:
     def __init__(self):
         pass
-
-    @staticmethod
-    def read_image_from_pdf(file_path):
-        pdf = convert_from_path(file_path, single_file=True)
-        cv_image = np.array(pdf[0]) 
-        return cv_image[:, :, ::-1]
     
     @staticmethod
     def levelToPercentage(value):
@@ -49,7 +37,8 @@ class ExtractHVFData:
         """
         try:
             if file_path.endswith(".pdf"):
-                    hvf_img = self.read_image_from_pdf(file_path)
+                print(file_path)
+                hvf_img = File_Utils.read_image_from_pdf(file_path)
             else:
                 hvf_img = File_Utils.read_image_from_file(file_path)
 
@@ -57,7 +46,7 @@ class ExtractHVFData:
             hvf_obj = Hvf_Object.get_hvf_object_from_image(hvf_img)
             
         except Exception as e:
-            print("Error: file not extractable", e)
+            print("Error: file not extractable:", e)
             return user
 
         user = self.extractMetadata(user, hvf_obj)
