@@ -126,13 +126,12 @@ https://stackoverflow.com/questions/21598872/how-to-create-multiple-class-object
 
 - [x] change progressor criteria to take in object
 - [x] all functions return progObject
-
 - [x] recheck criteria according to email in processData
-
-- [ ] grade trial folder and send results to Nia
+- [x] grade trial folder and send results to Nia
 
 ### Extensions
 - [ ] get working for 32-2 pdfs
+- [ ] progressor criteria runs only on scans where reliable = True and error = False, add filtering on dataframe to remove invalid scans
 
 ### intial bug fixes based on user requirements
 - [x] MD% and PSD% in the criteria for abnormal (criteria 3) [Fix psd < 5%]
@@ -147,7 +146,7 @@ https://stackoverflow.com/questions/21598872/how-to-create-multiple-class-object
 
 - [x] Error: ght unable to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_GHT'
 - [x] Error: metadata md % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_MDP'
-- [ ] Error: metadata psd % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_PSDP'
+- [x] Error: metadata psd % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_PSDP'
 
 
 ### GUI / Sonel
@@ -162,6 +161,7 @@ __Note__: driver.ipynb shows the full integration of how I am running objects
 - [ ] filter by eye left and right integration
 
 - [ ] psd % readings extremely inconsistent -- improve readings
+- [ ] false_neg_perc sometimes comes out as N/A in extraction on occasions -- needed to determine reliability
 
 Fix the following library aspects:
 Error: ght unable to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_GHT'

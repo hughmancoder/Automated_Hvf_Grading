@@ -147,23 +147,30 @@ class ExtractHVFData:
             print("Error: rx and/or vfi not extractable " + str(e))
 
         try:
-            user.md_perc = hvf_obj.metadata[Hvf_Object.KEYLABEL_MDP]
+            user.md_perc = hvf_obj.metadata[Hvf_Object.KEYLABEL_MDP].rstrip("%")
         except Exception as e:
             print("Error: metadata md % not able to be extracted " + str(e))
 
         try:
-            user.psd_perc = hvf_obj.metadata[Hvf_Object.KEYLABEL_PSDP]
+            user.psd_perc = hvf_obj.metadata[Hvf_Object.KEYLABEL_PSDP].rstrip("%")
         except Exception as e:
             print("Error: metadata psd % not able to be extracted " + str(e))
 
         try:
-            user.false_neg_perc = int(hvf_obj.metadata[Hvf_Object.KEYLABEL_FALSE_NEG].rstrip("%"))
             user.false_pos_perc = int(hvf_obj.metadata[Hvf_Object.KEYLABEL_FALSE_POS].rstrip("%"))
-            numerator, denominator = hvf_obj.metadata[Hvf_Object.KEYLABEL_FIXATION_LOSS].split("/")
-            user.fixation_loss = round((int(numerator) / int(denominator)) * 100, 2)  # convert to %
         except Exception as e:
-            print("Error: metadata extraction " + str(e))
+            print("Error: false_positive readings " + str(e))
+        try:
+            
+            user.false_neg_perc = int(hvf_obj.metadata[Hvf_Object.KEYLABEL_FALSE_NEG].rstrip("%"))
+        except Exception as e:
+            print("Error: false_negative readings " + str(e))
 
+        try:
+            numerator, denominator = hvf_obj.metadata[Hvf_Object.KEYLABEL_FIXATION_LOSS].split("/")
+            user.fixation_loss_perc = round((int(numerator) / int(denominator)) * 100, 2)  # convert to %
+        except Exception as e:
+            print("Error: fixation loss " + str(e))
         # other extractable data
         """
         KEYLABEL_STRATEGY
@@ -174,7 +181,7 @@ class ExtractHVFData:
         """
 
         # check if statistical values are reliable
-        user.reliable = self.checkReliability(user.false_pos_perc, user.fixation_loss, user.false_neg_perc)
+        user.reliable = self.checkReliability(user.false_pos_perc, user.fixation_loss_perc, user.false_neg_perc)
         return user
 
     @staticmethod

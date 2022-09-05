@@ -107,7 +107,11 @@ class FileRunner:
         Returns:
             _type_: dataFrame object
         """
-        
+
+        # check valid sample size        
+        if sample_size > len(path_array):
+            sample_size = len(path_array)
+
         if sample_size != False:
             path_array = FileRunner.getSamplesFromPathArray(path_array, sample_size)
         
@@ -153,5 +157,30 @@ class FileRunner:
         for userObj in user_objects:
             dataFrameObj.addData(userObj)
 
+        return dataFrameObj
+
+    # old function for testing
+    def runTwoJobsParallel(self, absolute_directory_path, sample_size = False):
+        """runs two jobs in parallel
+        Returns:
+            DataFrame object
+        """
+        path_array = FileRunner.getPathArray(absolute_directory_path)
+        if sample_size != False:
+            path_array = FileRunner.getSamplesFromPathArray(path_array, sample_size)
+        if len(path_array) <= 0:
+            print("Info: no files to read")
+            return None
+        user_objects = [User() for i in range(len(path_array))]
+        dataFrameObj = DataFrame(user_objects[0])
+
+        print(f"Info: running jobs in parallel on 2 logical cores")
+
+        user_objects = Parallel(n_jobs=-2)(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
+        user_objects = Parallel(n_jobs = -2)(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
+
+        # update data frame
+        for userObj in user_objects:
+            dataFrameObj.addData(userObj)
         return dataFrameObj
 
