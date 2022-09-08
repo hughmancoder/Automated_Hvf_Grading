@@ -112,7 +112,13 @@ class DataFrame:
         except Exception as e:
             print("Error removing faulty dates and scans " + str(e))
 
-        return df[df["eye"] == eye].sort_values(by="test_date")
+        return df[df["eye"] == eye].sort_values(by="test_date") 
+    
+    @staticmethod
+    def filterByID_static(df, id):
+        tempdf = df
+        tempdf[tempdf["id"] == id]
+        return tempdf
     """
     def renameHemifields(self, df, eye):
         rename = self.locationLabels(eye)
@@ -242,23 +248,24 @@ class DataFrame:
         return self.renameHemifields(df, eye)
 
     @staticmethod             
-    def progressorCriteria_df(df, eye):
+    def progressorCriteria_df(df, eye, id):
         """updates df with both progressor and confirmation field criteria
 
         Args (eye): "Left" or "Right"
 
         Returns updated df
         """
-        
-        df = DataFrame.filterByEye_static(df, eye)
+        tempdf = df
+        tempdf = DataFrame.filterByEye_static(tempdf, eye)
+        tempdf = DataFrame.filterByID_static(tempdf, id)
 
-        rows = df.shape[0]
+        rows = tempdf.shape[0]
         if rows <= 2:
             print(f"Info: {rows} samples is insufficient to evaluate progression criteria; issue could be wrong entry to filter patient")
-            return DataFrame.renameHemifields(df, eye)
+            return DataFrame.renameHemifields(tempdf, eye)
 
-        df["progression"] = False
-        p = df["is_abnormal"].values
+        tempdf["progression"] = False
+        p = tempdf["is_abnormal"].values
         progression_index = -1
         for i in range(rows - 2):
             if (p[i] and p[i + 1]) or (p[i] and p[i + 2]) or (p[i + 1] and p[i + 2]):
@@ -267,13 +274,13 @@ class DataFrame:
                 break
 
         if progression_index > -1:
-            df["progression"].iloc[progression_index:] = True
-            df["progression_date"] = "-"
-            df["progression_date"].iloc[progression_index:] = df["test_date"].iloc[progression_index]
+            tempdf["progression"].iloc[progression_index:] = True
+            tempdf["progression_date"] = "-"
+            tempdf["progression_date"].iloc[progression_index:] = tempdf["test_date"].iloc[progression_index]
             
         else:
             print("Info: no progression detected")
-            return DataFrame.renameHemifields(df, eye)        
+            return DataFrame.renameHemifields(tempdf, eye)        
         
         # == confirmation field algorithm == 
         # save index of first progression
@@ -289,7 +296,7 @@ class DataFrame:
         }
 
         first_progression_date = "-"
-        regions = df.loc[:, "UL" : "LR" :]
+        regions = tempdf.loc[:, "UL" : "LR" :]
         v = regions.values.tolist()
         
         # checking for any 2 abnormal scans out of 3 chronological scans in same region
@@ -313,23 +320,23 @@ class DataFrame:
         progression_indexes = [i for i in region_progressions.values() if i != -1]
         if not len(progression_indexes):
             print("Info: No confirmation_fields found")
-            return DataFrame.renameHemifields(df, eye)
+            return DataFrame.renameHemifields(tempdf, eye)
 
         first_progression = min(progression_indexes)
         print(first_progression)
-        df["confirmation_field"] = False
-        df["confirmation_field_regions"] = ""
+        tempdf["confirmation_field"] = False
+        tempdf["confirmation_field_regions"] = ""
 
         if first_progression >= 0:
             try:
-                df["confirmation_field"].iloc[first_progression:] = True
+                tempdf["confirmation_field"].iloc[first_progression:] = True
                 for key, val in region_progressions.items():
                     if val >= 0:
-                        df["confirmation_field_regions"].iloc[val:] += " " + str(key)
+                        tempdf["confirmation_field_regions"].iloc[val:] += " " + str(key)
             except Exception as e:
                 print("Error: ", e)
-                return DataFrame.renameHemifields(df, eye)
+                return DataFrame.renameHemifields(tempdf, eye)
 
-        return DataFrame.renameHemifields(df, eye)
+        return DataFrame.renameHemifields(tempdf, eye)
 
 

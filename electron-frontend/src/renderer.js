@@ -420,6 +420,15 @@ async function analysisuploadfiles(inputdf, format) {
     array.push("0");
   }
 
+  array.push("-e");
+  if (document.getElementById("analysisleftradio").checked) {
+    array.push("Left");
+  } else if (document.getElementById("analysisrightradio").checked) {
+    array.push("Right");
+  } else {
+    array.push("Left");
+  }
+
   array.push("-p"); 
 
   let selected = document.getElementById('analysisDropdown');
@@ -452,13 +461,14 @@ async function analysisuploadfiles(inputdf, format) {
     } else if (message.startsWith("<table")) {
       let content = document.getElementById("analysistable-div");
       content.insertAdjacentHTML("afterbegin", message);
-      $('#analysis-table > thead > tr').children().eq(4).attr({"data-field":"Eye", "data-filter-control":"select", "data-sortable":true});
-      $('#analysis-table > thead > tr').children().eq(3).attr({"data-field":"ID", "data-filter-control":"select", "data-sortable":true});
-      $('#analysis-table > thead > tr').children().eq(1).attr({"data-field":"Name", "data-filter-control":"select", "data-sortable":true});
+      $('#analysis-table > thead > tr').children().eq(4).attr({"data-field":"eye", "data-filter-control":"select", "data-sortable":true});
+      $('#analysis-table > thead > tr').children().eq(3).attr({"data-field":"id", "data-filter-control":"select", "data-sortable":true});
+      $('#analysis-table > thead > tr').children().eq(1).attr({"data-field":"name", "data-filter-control":"select", "data-sortable":true});
       $('#analysis-table').attr({"data-search":true, "data-single-select":true, "data-click-to-select":true,  "data-show-columns":true, "data-show-columns-search":true, "data-search-highlight":true, "data-show-columns-toggle-all":true,
       "data-buttons-align":"left", "data-show-export":true, "data-filter-control":true, "data-silent-sort":false, "data-alignment-select-control-options":"left", "data-disable-control-when-search":true,
       "data-show-search-clear-button":true});
       $('#analysis-table > thead > tr').prepend('<th data-field="radio" data-radio="true"></th>')
+      $('#analysis-table > tbody > tr').prepend('<td></td>')
       $('#analysis-table').bootstrapTable();
       console.log(message);
     } else if (message.startsWith('{"schema')) {

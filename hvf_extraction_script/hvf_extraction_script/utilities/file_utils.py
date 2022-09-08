@@ -85,7 +85,8 @@ class File_Utils:
     # Given file path, reads cv2 image from file
     @staticmethod
     def read_image_from_pdf(file_path):
-        # pdf = convert_from_path(file_path, single_file=True, poppler_path="C:\\Users\\sonel\\Documents\\GitHub\\Automated_Hvf_Grading\\electron-frontend\\src\\poppler\\Library\\bin") # when packed
+        # pdf = convert_from_path(file_path, single_file=True, poppler_path="./src/poppler/Library/bin") # when packed
+        # pdf = convert_from_path(file_path, single_file=True, poppler_path="C:/Users/sonel/Documents/GitHub/Automated_Hvf_Grading/electron-frontend/src/poppler/Library/bin") # when unpacked on windows
         pdf = convert_from_path(file_path, single_file=True)
         cv_image = numpy.array(pdf[0]) 
         return cv_image[:, :, ::-1]
@@ -94,7 +95,6 @@ class File_Utils:
     # Given file path, reads DICOM object from file
     @staticmethod
     def read_dicom_from_file(file_path):
-
         return pydicom.dcmread(file_path);
 
     ###############################################################################
@@ -186,7 +186,6 @@ class File_Utils:
     @staticmethod
     def get_writing_fh(file_path):
         fh = open(file_path, "w+");
-
 
 
     ###############################################################################

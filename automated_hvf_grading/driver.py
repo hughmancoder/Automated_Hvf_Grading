@@ -50,6 +50,12 @@ def runConcurrent(file_paths, sample_size = False):
     fileRunnerObj = FileRunner() 
     return fileRunnerObj.runCustomParallel(file_paths, 1, sample_size) 
 
+def runParallelAnalysis(df, ids, eye):
+    """runs analysis on a list of ids
+    """
+    fileRunnerObj = FileRunner() 
+    return fileRunnerObj.runCustomParallelAnalysis(-2, df, ids, eye)
+
 def saveDf(df):
     # saves to current repository
     df.to_csv('save.csv')

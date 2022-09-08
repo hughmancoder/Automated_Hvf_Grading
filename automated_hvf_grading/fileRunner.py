@@ -1,10 +1,12 @@
 # == imports == 
+from asyncio import constants
 from ctypes import Array
 import os
 from joblib import Parallel, delayed
 import joblib.parallel
 import math
 import time
+import pandas as pd
 
 # == dependencies == 
 from automated_hvf_grading.extractHVFdata import ExtractHVFData
@@ -149,38 +151,55 @@ class FileRunner:
         user_objects = [User() for i in range(len(path_array))]
         dataFrameObj = DataFrame(user_objects[0])
 
-        print(f"Info: running jobs using {n_jobs} n_jobs")
+        print(f"Info: Processing {total_n_jobs} files")
 
-        user_objects = Parallel(n_jobs = n_jobs , prefer="threads")(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
+        user_objects = Parallel(n_jobs = n_jobs)(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
     
         # update data frame
         for userObj in user_objects:
             dataFrameObj.addData(userObj)
 
         return dataFrameObj
+    
+    def runCustomParallelAnalysis(self, n_jobs, df, ids, eye):
+        """Runs 
 
-    # old function for testing
-    def runTwoJobsParallel(self, absolute_directory_path, sample_size = False):
-        """runs two jobs in parallel
+        Args:
+            n_jobs (_type_): Joblib n_jobs parameter
+
         Returns:
-            DataFrame object
+            _type_: dataFrame object
         """
-        path_array = FileRunner.getPathArray(absolute_directory_path)
-        if sample_size != False:
-            path_array = FileRunner.getSamplesFromPathArray(path_array, sample_size)
-        if len(path_array) <= 0:
-            print("Info: no files to read")
-            return None
-        user_objects = [User() for i in range(len(path_array))]
-        dataFrameObj = DataFrame(user_objects[0])
+        
+        total_n_jobs = len(ids)
+        
+        class BatchCompletionCallBack(object):
+            def __init__(self, dispatch_timestamp, batch_size, parallel):
+                self.dispatch_timestamp = dispatch_timestamp
+                self.batch_size = batch_size
+                self.parallel = parallel
 
-        print(f"Info: running jobs in parallel on 2 logical cores")
+            def __call__(self, out):
+                self.parallel.n_completed_tasks += self.batch_size
+                this_batch_duration = time.time() - self.dispatch_timestamp
 
-        user_objects = Parallel(n_jobs=-2)(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
-        user_objects = Parallel(n_jobs = -2)(delayed(self.runFile)(file_path, user_objects[i]) for i, file_path in enumerate(path_array))
+                self.parallel._backend.batch_completed(self.batch_size,
+                                                this_batch_duration)
+                self.parallel.print_progress()
+                # Added code - start
+                progress = math.trunc((self.parallel.n_completed_tasks / total_n_jobs) * 100)
+                print("Progress: {}".format(progress))
 
+                time_remaining = math.trunc((this_batch_duration / self.batch_size) * (total_n_jobs - self.parallel.n_completed_tasks))
+                print( "ETA: {}s".format(time_remaining/60))
+                # Added code - end
+                if self.parallel._original_iterator is not None:
+                    self.parallel.dispatch_next()
+                    
+        joblib.parallel.BatchCompletionCallBack = BatchCompletionCallBack
+        
+        sliced_dfs = Parallel(n_jobs=n_jobs, prefer="threads")(delayed(DataFrame.progressorCriteria_df)(df, eye, i) for i in ids)
         # update data frame
-        for userObj in user_objects:
-            dataFrameObj.addData(userObj)
-        return dataFrameObj
+        
 
+        return pd.concat(sliced_dfs, ignore_index=True)
