@@ -1,14 +1,36 @@
-# automated-hvf-grading
-humphrey visual field matrix reading, grading and analysis automated via python script for research at Flinders University
+# Automated HVF Grading
+Humphrey Visual Field matrix reading, grading and analysis automated via python for research at Flinders University
 
-### supporting library:
-__hvf_extraction_script__
-https://github.com/msaifee786/hvf_extraction_script
+## Supporting library:
+[hvf_extraction_script](
+https://github.com/msaifee786/hvf_extraction_script)
 
-### Regions 
+## Features
+***
+- algorithm to automate reading hvf % pattern deviation field scans
+- data filtering such as sorting eye by left and right, patient name, chronological order
+- automating progression of glaucoma: we can chronologically map past outcomes and apply  progressor criteria (see below) to detect an onset
+- parallel processing: runParallel function allows us to run jobs simulatenously on multi-core computer saving time for huge file batches by using full cpu processing capabilities
+- your choice of how you use it. Directly through the module, a CLI or via a GUI
+
+## Usage
+This library can be used in 3 ways:
+
+**Methods 1 and 2 require the [setup of a conda environment](#developer-setup)**
+### 1. Directly through the module
+Install the library by running `pip install .` in the root of the repo. Then you can import the library and use it in your code.
+
+### 2. From the CLI
+Run `python automated_hvf_grading/cli.py` in the root of the repo.
+![CLI Image](images/CLI.png)
+### 3. Using an easy to use GUI
+The Electron based GUI is a wrapper of the CLI. It is bundles with a python environment ~~You can download it from the [releases page]~~ *Coming soon*
+![GUI Image](images/GUIGrading.png)
+
+## Regions 
 ![image info](images/regions.png)
 
-### changes
+## Recent Changes
 ***
 - rewrote entire repository from ground up!
 - improved error messages and error checking
@@ -18,20 +40,8 @@ https://github.com/msaifee786/hvf_extraction_script
 - many more features
 - improved parallel processing takes full advantage of cpu: program can now process large file batches very quickly on multi-core cpu's
 
-### features
-***
-- algorithm to automate reading hvf % pattern deviation field scans
-- data filtering such as sorting eye by left and right, patient name, chronological order
-- automating progression of glaucoma: we can chronologically map past outcomes and apply  progressor criteria (see below) to detect an onset
-- parallel processing: runParallel function allows us to run jobs simulatenously on multi-core computer saving time for huge file batches by using full cpu processing capabilities
 
-
-### Run backend
-1. create conda environment (see developer notes below)
-2. run from driver.ipynb
-
-
-### Algorithmic Criteria
+## Algorithmic Criteria
 ***
   An eye was deemed to have progressed if there was a new cluster of visual field defects that were reproduced in a consecutive field (but not necessarily the same visual field locations). A cluster of visual field defects was defined as 3 contiguous points abnormal in the pattern deviation probability plot at P < 5%, at least one of which is P< 1%. If the GHT was “Outside Normal Limits” or the global PSD was P < 5% on the two consecutive HVFs, then the individual points only needed to be abnormal on the pattern deviation probability plot at P < 5%. 
 
@@ -41,8 +51,7 @@ https://github.com/msaifee786/hvf_extraction_script
 
   category 3) A cluster of at least 3 contiguous points in the same region depressed at P < 5% AND (GHT = Outside Normal Limits OR PSD = P < 5%)
 
-
-### Terminology
+## Terminology
     abnormal: there is a defect in eye as given algorithmic criteria is satisfied
 
     reliable: data is reliable if and only if false pos and fixation loss are both less than 33%
@@ -60,14 +69,14 @@ https://github.com/msaifee786/hvf_extraction_script
     Progression onset: date of the first recorded progression
 
 
-### short hand terminology
+## Short hand terminology
 ***
   matrix sub-regions: ul, ll, um, uc, lc, lm, ur, lr
   upper left, lower left, upper middle, upper central, lower central, lower middle, upper right, lower right
   final output listed as equivalent medical terms
 
 
-### location labels
+## Location labels
   __left eye__
   "UL": "Superior temporal wedge",
   "LL": "Inferior temporal wedge",
@@ -95,7 +104,7 @@ https://github.com/msaifee786/hvf_extraction_script
  ### right eye
  ![image info](images/righteyeregions.png)
 
-### To-do
+## To-do
 - [x] refactor code using OOP
 - [x] refactor into a modules
 
@@ -129,11 +138,11 @@ https://stackoverflow.com/questions/21598872/how-to-create-multiple-class-object
 - [x] recheck criteria according to email in processData
 - [x] grade trial folder and send results to Nia
 
-### Extensions
+## Extensions
 - [ ] get working for 32-2 pdfs
 - [ ] progressor criteria runs only on scans where reliable = True and error = False, add filtering on dataframe to remove invalid scans
 
-### intial bug fixes based on user requirements
+## Intial bug fixes based on user requirements
 - [x] MD% and PSD% in the criteria for abnormal (criteria 3) [Fix psd < 5%]
 - [x] region defect not detected upon criteria 2 and 3 (see file error2.pdf)
 - [x] location labels mixed up (nasal step labeled as temporal wedge) 
@@ -149,27 +158,19 @@ https://stackoverflow.com/questions/21598872/how-to-create-multiple-class-object
 - [x] Error: metadata psd % not able to be extracted type object 'Hvf_Object' has no attribute 'KEYLABEL_PSDP'
 
 
-### GUI / Sonel
-__Note__: driver.ipynb shows the full integration of how I am running objects
+## GUI / Sonel
 - [x] parseDataFrame run data is not defined
 - [x] False negatives (list reliability index on GUI)
 - [x] highlight/ 'select' a row of the table (ie an individual field) to make it easy to track when scrolling across
 - [x] column headings should be locked so when scrolling down the rows these still stay at the top
 - [x] implement a more intuitive drop down filter for right and left eye
-- [ ] absolutely all user object variables displayed on GUI output
-- [ ] integrate parallel joblib up to 7 jobs for parallel processor for 8 core cpu
-- [ ] filter by eye left and right integration
-
-- [ ] psd % readings extremely inconsistent -- improve readings
+- [x] absolutely all user object variables displayed on GUI output
+- [x] integrate parallel joblib up to 7 jobs for parallel processor for 8 core cpu
+- [x] filter by eye left and right integration
+- [x] psd % readings extremely inconsistent -- improve readings
 - [ ] false_neg_perc sometimes comes out as N/A in extraction on occasions -- needed to determine reliability
 
-Fix the following library aspects:
-Error: ght unable to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_GHT'
-Error: rx and/or vfi not extractable
-Error: metadata md % not able to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_MDP'
-Error: metadata psd % not able to be extractedtype object 'Hvf_Object' has no attribute 'KEYLABEL_PSDP'
-
-### notes / issues
+## notes / issues
 ***
 __sample field attached to email___
 - [ ] the issue with errorSample is that the psd % cannot be properly read or ght.Therefore we cannot determine if criteria 3 is valid so I coded the algorithm to  default to criteria 2
@@ -190,9 +191,9 @@ To solve this problem, hemifield labels are converted with a map and will not be
 - [x] ght is commonly unable to be extracted, the extraction mechanism/code should be looked into in more detail
 
 
-### developer notes
+## Developer Setup
 ***
-to run library environment: 
+To create the environment: 
 Install either Conda or Miniconda and run the following commands
 ```bash
 conda create --name ENV_NAME regex pillow fuzzywuzzy pandas python-levenshtein numpy joblib IPython pdf2image
@@ -207,27 +208,7 @@ pip install . (OR python setup.py install / develop)
 ```
 
 Packing env for use in front end:
+Using conda-pack
 ```bash
 conda pack -n ENV_NAME -o env.zip
 ```
-### Hugh's development environment for modified library
-```
-conda create --name ENV_NAME
-conda activate ENV_NAME
-
-conda install pip
-conda install -c conda-forge tesseract tesserocr poppler
-```
-cd to hvf_extraction script and run:
-```
-python setup.py develop
-```
-install other libraries:
-```
-pip install -r requirements.txt
-```
-
-
-### GUI demo
-![image info](images/GUIGrading.png)
-**select python interpreter: automated-hvf-grading**

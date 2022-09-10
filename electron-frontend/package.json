@@ -1,13 +1,13 @@
 {
   "name": "automatedhvfanalysisgui",
   "productName": "automatedhvfanalysisgui",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "GUI wrapper for Automated HVF Analysis",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
+    "make": "electron-forge make --targets @electron-forge/maker-zip",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""
   },
