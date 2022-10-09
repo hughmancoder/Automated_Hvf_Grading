@@ -22,7 +22,8 @@ setuptools.setup(
           'opencv-python',
           'fuzzywuzzy',
           'fuzzysearch',
-          'python-levenshtein'
+          'python-levenshtein',
+          'pymupdf'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -7,13 +7,11 @@
 ###############################################################################
 
 # Import necessary packages
-import sys
 import os
 import cv2
-from shutil import copyfile
 import pydicom
-from pdf2image import convert_from_path
-import numpy
+import fitz
+import numpy as np
 
 class File_Utils:
 	###############################################################################
@@ -84,12 +82,13 @@ class File_Utils:
     ###############################################################################
     # Given file path, reads cv2 image from file
     @staticmethod
-    def read_image_from_pdf(file_path):
-        # pdf = convert_from_path(file_path, single_file=True, poppler_path="./src/poppler/Library/bin") # when packed
-        # pdf = convert_from_path(file_path, single_file=True, poppler_path="C:/Users/sonel/Documents/GitHub/Automated_Hvf_Grading/electron-frontend/src/poppler/Library/bin") # when unpacked on windows
-        pdf = convert_from_path(file_path, single_file=True)
-        cv_image = numpy.array(pdf[0]) 
-        return cv_image[:, :, ::-1]
+    def read_image_from_pdf(file_path):        
+        doc = fitz.open(file_path) 
+        zoom = 3
+        mat = fitz.Matrix(zoom, zoom)
+        pix = doc[0].get_pixmap(matrix = mat)
+        im = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n)
+        return np.ascontiguousarray(im[..., [2, 1, 0]])
 
     ###############################################################################
     # Given file path, reads DICOM object from file

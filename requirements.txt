@@ -7,7 +7,7 @@ fuzzywuzzy
 fuzzysearch
 pandas
 python-levenshtein
-pdf2image
 numpy
 joblib
 ipython
+pymupdf

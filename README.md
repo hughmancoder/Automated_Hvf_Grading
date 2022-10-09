@@ -194,21 +194,22 @@ To solve this problem, hemifield labels are converted with a map and will not be
 ## Developer Setup
 ***
 To create the environment: 
-Install either Conda or Miniconda and run the following commands
+Install either Conda or Miniconda(used to create prebuilt binares) and run the following commands
 ```bash
-conda create --name ENV_NAME regex pillow fuzzywuzzy pandas python-levenshtein numpy joblib IPython pdf2image
+conda create --name ENV_NAME regex pillow fuzzywuzzy pandas python-levenshtein numpy joblib IPython
 conda activate ENV_NAME
-conda install -c conda-forge tesserocr poppler
+conda install -c conda-forge tesserocr
 pip install -r requirements.txt
 ```
+
 To install the modified hvf_extraction_library:
 ```bash
 # navigate to /hvf_extraction_script (modified)
 pip install . (OR python setup.py install / develop)
 ```
 
-Packing env for use in front end:
-Using conda-pack
+Packing env for use in front end using conda-pack:
 ```bash
+conda install conda-pack
 conda pack -n ENV_NAME -o env.zip
 ```
